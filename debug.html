@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="cpu_common.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="cpu_definitions.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="cpu_interrupts.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="cpu_exec_branches.js" type="text/javascript" encoding="UTF-8"></script>
+</head>
+<meta charset="UTF-8">
+<body>
+
+<h1>MK85 CPU Debug</h1>
+
+<button type="button" onclick="cpustep()"> CPU step </button></br>
+<button type="button" onclick="cpu.reset()"> Reset </button></br> 
+
+<p id="regs">regs</p><br>
+
+<script>
+
+var cpuflags = [
+	["H",0x0100],
+	["I",0x0080],
+	["T",0x0010],
+	["N",0x0008],
+	["Z",0x0004],
+	["V",0x0002],
+	["C",0x0001]];
+
+function cpustep(){
+	cpu.step();
+	regs = document.getElementById("regs");
+	regstr = "";
+	for(var i = 0; i<8; i++)
+	{
+		regstr += "R";
+		regstr += i.toString(10);
+		regstr += " = " + cpu.reg_u16[i].toString(16);
+		regstr += "\n";
+	};
+	regstr += "PSW: ";
+	for(var j = 0; j < cpuflags.length; j++) {
+		regstr += (cpu.psw&cpuflags[j][1])?(cpuflags[j][0]):"-";
+	};
+	regs.innerHTML="<pre>"+regstr+"</pre>";
+}
+
+var ram = new Uint8Array(65536);
+
+ram[0] = 0x80;
+ram[1] = 0x80;
+ram[2] = 0x80;
+ram[3] = 0x80;
+cpu = new CPU();
+
+cpu.reg_u16[6] = 1;
+
+cpu.readCallback = function (addr) {
+	return ram[addr];
+};
+
+cpu.writeCallback = function (addr, byteVal) {
+	ram[addr] = byteVal;
+};
+
+console.log("hai!");
+</script>
+</body>
+</html>
