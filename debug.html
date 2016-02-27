@@ -5,7 +5,7 @@
 <script src="cpu_definitions.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_interrupts.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_exec_branches.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="scratchmonkey.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="cpu_addressing.js" type="text/javascript" encoding="UTF-8"></script>
 </head>
 <meta charset="UTF-8">
 <body>
@@ -52,8 +52,10 @@ var ram = new Uint8Array(65536);
 
 ram[0] = 0x81;
 ram[1] = 0x82;
-ram[2] = 0x83;
+ram[2] = 0x82;
 ram[3] = 0x84;
+ram[0x8482] = 0x55;
+ram[0x8483] = 0xaa;
 
 /* create CPU object */
 cpu = new CPU();
@@ -72,14 +74,11 @@ cpu.reg_u16[7] = 0x0002;
 
 function scratchmonkey() {
 	console.log("IP was", cpu.reg_u16[7]);
-	var x = cpu.addressing(cpu.reg_u16[7],0x17, false);
+	var x = cpu.addressing(cpu.reg_u16[7],0x1F, false);
 	console.log("IP is now", cpu.reg_u16[7]);	
 	console.log("#n a.k.a. immediate a.k.a. mode 27", x.r());	
-	console.log(x);
-/*	x.w(5);
-	console.log(cpu.reg_u16[6]);
+	x.w(0x8000);
 	console.log(x.r());
-*/	
 }
 
 console.log("hOi!");
