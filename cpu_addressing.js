@@ -1,3 +1,7 @@
+//CPU.prototype.addressing
+
+
+
 function adressing(operandVal, instructionPointer, isByte) {
 	var regIndex = operandVal&7;
 	var addrMode = (operandVal>>3)&7;
@@ -9,6 +13,9 @@ function adressing(operandVal, instructionPointer, isByte) {
 	switch(addrMode) {
 		/* register */
 		case 0: 
+		{
+			this.w = new Function
+		}
 		/* register deferred */
 		case 1: 
 		/* autoincrement */

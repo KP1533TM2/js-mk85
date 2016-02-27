@@ -2,6 +2,7 @@ function CPU() {
     this.regBuffer	= new ArrayBuffer(16);
     this.regView	= new DataView(this.regBuffer, 0);
     this.reg_u16	= new Uint16Array(this.regBuffer);
+    this.reg_u8		= new Uint8Array(this.regBuffer);
     
     /* reset state */
     this.nextFun		= CPU.prototype.execVector;
