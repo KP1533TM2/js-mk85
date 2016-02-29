@@ -5,7 +5,10 @@
 <script src="cpu_definitions.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_interrupts.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_exec_branches.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="cpu_exec_doubleops.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_addressing.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="cpu_flags.js" type="text/javascript" encoding="UTF-8"></script>
+
 </head>
 <meta charset="UTF-8">
 <body>
@@ -50,10 +53,10 @@ function cpustep(){
 
 var ram = new Uint8Array(65536);
 
-ram[0] = 0x81;
-ram[1] = 0x82;
-ram[2] = 0x82;
-ram[3] = 0x84;
+ram[0] = 0x57;
+ram[1] = 0x11;
+ram[2] = 0xaa;
+ram[3] = 0x55;
 ram[0x8482] = 0x55;
 ram[0x8483] = 0xaa;
 

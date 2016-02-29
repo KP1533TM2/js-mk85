@@ -2,7 +2,9 @@ function CPU() {
     this.regBuffer	= new ArrayBuffer(16);
     this.regView	= new DataView(this.regBuffer, 0);
     this.reg_u16	= new Uint16Array(this.regBuffer);
+    this.reg_s16	= new Int16Array(this.regBuffer);
     this.reg_u8		= new Uint8Array(this.regBuffer);
+    this.reg_s8		= new Int8Array(this.regBuffer);
     
     /* reset state */
     this.nextFun		= CPU.prototype.execVector;
@@ -39,8 +41,20 @@ CPU.prototype.access = function(addr,writeVal,isByte) {
 
 CPU.prototype.execCode = function() {
 	this.vector = null;
-	console.log("----");
-//	return CPU.prototype.execCode;
+
+	/* test */
+	
+	
+	
+	this.reg_s16[4] = Math.floor((Math.random()*65535)+32768);
+	this.reg_s16[5] = Math.floor((Math.random()*65535)+32768);
+//	this.reg_s16[2] = Math.floor((Math.random()*255))<<7;
+	this.reg_s16[7] = 0x0002;
+//	this.reg_s16[2] = 0xff00;
+	this.execDoubleOp(0x2144); // MOVB R2 -> R3
+
+	return CPU.prototype.execCode;
+
 	/* if we reached down here, then opcode was not understood, therefore reserved code trap */
 	this.vector = this.vectors.TRAP_RESERVED_OPCODE;
 	return CPU.prototype.execVector;

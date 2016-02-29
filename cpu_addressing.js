@@ -5,19 +5,25 @@ CPU.prototype.addrReg = function(reg, isByte) {
 	if(isByte) {
 		return {
 			w: function(val) {
-				self.reg_u16[regIndex] = (self.reg_u16[regIndex]&0xFF00)|(0xFF&val);
+				self.reg_s8[reg<<1] = val;
 			},
-			r: function() {
-				return self.reg_u16[regIndex]&0xFF;
+			rs: function() {
+				return self.reg_s8[reg<<1];
+			},
+			ru: function() {
+				return self.reg_u8[reg<<1];
 			}
 		};
 	} else {
 		return {
 			w: function(val) {
-				self.reg_u16[regIndex] = val;
+				self.reg_u16[reg] = val;
 			},
-			r: function() {
-				return self.reg_u16[regIndex];
+			rs: function() {
+				return self.reg_s16[reg];
+			},
+			ru: function() {
+				return self.reg_u16[reg];
 			}
 		};
 	}
@@ -26,16 +32,42 @@ CPU.prototype.addrReg = function(reg, isByte) {
 CPU.prototype.addrMem = function(memAddr, isByte) {
 	/* address memory */
 	var self = this;
-	return {
-		w: function(val) {
-			//console.log("memAddr", memAddr.toString(16));
-			self.access(memAddr, val, isByte);
-		},
-		r: function() {
-			//console.log("memAddr", memAddr.toString(16));
-			return self.access(memAddr, null, isByte);
-		}
-	};
+	
+	if(isByte) {
+		return {
+			w: function(val) {
+				self.access(memAddr, val, true);
+			},
+			rs: function() {
+				/* lazy stuff */
+				var v = new Int8Array([self.access(memAddr, null, true)])
+				return v[0];
+			},
+			ru: function() {
+				/* lazy stuff */
+				var v = new Uint8Array([self.access(memAddr, null, true)])
+				return v[0];
+			},
+			memAddr: memAddr
+		};
+	} else {
+		return {
+			w: function(val) {
+				self.access(memAddr, val, false);
+			},
+			rs: function() {
+				/* lazy stuff */
+				var v = new Int16Array([self.access(memAddr, null, false)])
+				return v[0];
+			},
+			ru: function() {
+				/* lazy stuff */
+				var v = new Uint16Array([self.access(memAddr, null, false)])
+				return v[0];
+			},
+			memAddr: memAddr
+		};
+	}
 };
 
 CPU.prototype.addressing = function(immediateIP, operand, isByte) {
@@ -81,6 +113,55 @@ CPU.prototype.addressing = function(immediateIP, operand, isByte) {
 	result.nextIP = immediateIP;
 	return result;
 };
+
+CPU.prototype.addressingIP = function(operand, isByte) {
+
+	/* Warning! This function automatically advances IP register among the others, 
+	 * so shadow-copy your register file before executing a cycle!
+	 */
+
+	var regIndex = operand&7;
+	var addrMode = (operand>>3)&7;
+	var self = this;
+	
+	var result = null;
+	
+	if(addrMode==0) {
+		/* if register addressing mode, just get it over with */
+		result = this.addrReg(regIndex, isByte);
+		return result;
+	}
+
+	if((addrMode&6)==4) {
+		/* autodecrement */
+		this.reg_u16[regIndex] -= ((addrMode&1)==0)?(isByte?1:2):2;
+	}
+
+	/* take base value for modes, that is (Ri) */
+	var memPtr = self.reg_u16[regIndex];
+
+	if((addrMode&6)==2) {
+		/* autoincrement */
+		this.reg_u16[regIndex] += ((addrMode&1)==0)?(isByte?1:2):2;
+	}
+		
+	if((addrMode&6)==6) {
+		/* index thing */
+		/* get value from current immediate IP address, from second or third word that is */
+		memPtr=(memPtr+this.access(this.reg_u16[7], null, false))&0xFFFF;
+		this.reg_u16[7]+=2;
+	}
+	
+	if((addrMode&1)==1) {
+		/* if deferred, add another indirection */
+		memPtr=this.access(memPtr, null, false);
+	}
+	
+	result=this.addrMem(memPtr, isByte);
+	return result;
+};
+
+
 			/* template */
 /*			case 1: return {
 				w: function(val) {
