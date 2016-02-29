@@ -6,6 +6,17 @@ function CPU() {
     this.reg_u8		= new Uint8Array(this.regBuffer);
     this.reg_s8		= new Int8Array(this.regBuffer);
     
+    /* since this is JavaScript and we have no simple solution for static typing and typecasting
+     * our registers and variables, we're going to organize a safe static "scratchpad" area where
+     * everyhing acts like we expect it to.
+     * It's silly, I know :)
+     */
+    this.scratchpad = new ArrayBuffer(16);
+    this.sp_u16		= new Uint16Array(this.scratchpad);
+    this.sp_s16		= new Int16Array(this.scratchpad);
+    this.sp_u8		= new Uint8Array(this.scratchpad);
+    this.sp_s8		= new Int8Array(this.scratchpad);
+    
     /* reset state */
     this.nextFun		= CPU.prototype.execVector;
     this.vector			= this.vectors.RESET;
@@ -48,10 +59,13 @@ CPU.prototype.execCode = function() {
 	
 	this.reg_s16[4] = Math.floor((Math.random()*65535)+32768);
 	this.reg_s16[5] = Math.floor((Math.random()*65535)+32768);
+/*	this.reg_s16[4] = 0x84f2;
+	this.reg_s16[5] = 0xd34a;*/
+
 //	this.reg_s16[2] = Math.floor((Math.random()*255))<<7;
 	this.reg_s16[7] = 0x0002;
 //	this.reg_s16[2] = 0xff00;
-	this.execDoubleOp(0x2144); // MOVB R2 -> R3
+	this.execDoubleOp(0xA144&0xffff); // MOVB R2 -> R3
 
 	return CPU.prototype.execCode;
 
