@@ -21,17 +21,12 @@ CPU.prototype.getBranchCondition = function(opcode)
 	var N = ((this.psw&this.flags.N)?true:false) && (b10 || (b15 && !(b10 || b9)));
 	/* compute actual value */
 	var result = (uncond || (Z || (N != V) || C)) == b8;
-	if(this.debug)
-	{
-		console.log("branch decision = ", result);
-	};
 	return result;
 };
 
 CPU.prototype.execBranch = function(code) {
 	// Branch instruction payload
 	this.sp_u8[0] = code&0xff;	// get offset
-		console.log(this.sp_s8[0]);
 	if(this.getBranchCondition(code)) {
 		this.reg_u16[7] += this.sp_s8[0]*2;
 	}
