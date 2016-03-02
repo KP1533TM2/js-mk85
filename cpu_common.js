@@ -49,25 +49,37 @@ CPU.prototype.access = function(addr,writeVal,isByte) {
 };
 
 
+CPU.prototype.getOctet = function(octet, val) {return ((val>>(octet*3))&7);};
 
 CPU.prototype.execCode = function() {
 	this.vector = null;
+	
+	var shadowBuffer = this.regBuffer.slice();
+	var shadowPSW = this.psw;
 
 	/* test */
-	
-	
-	
-	this.reg_s16[4] = Math.floor((Math.random()*65535)+32768);
-	this.reg_s16[5] = Math.floor((Math.random()*65535)+32768);
-/*	this.reg_s16[4] = 0x84f2;
-	this.reg_s16[5] = 0xd34a;*/
 
-//	this.reg_s16[2] = Math.floor((Math.random()*255))<<7;
-	this.reg_s16[7] = 0x0002;
-//	this.reg_s16[2] = 0xff00;
-	this.execDoubleOp(0xA144&0xffff); // MOVB R2 -> R3
+	//this.reg_u16[7] &= ~8;
+	
+	/* fetch opcode from IP */
+	var code = this.access(this.reg_u16[7], null, false);
+	this.reg_u16[7] += 2;
 
-	return CPU.prototype.execCode;
+	switch(this.getOctet(4, code)) {
+		case 0: {
+			/* branches and other things */
+			if(((code&0xff00)>0)&&(((code>>11)&1)==0)) {
+				// branch
+				return this.execBranch(code);
+			}
+		}
+		case 7: break;
+		default: return this.execDoubleOp(code);
+	}
+
+	/* restore things clean before TRAP */
+	this.regBuffer = shadowBuffer;
+	this.psw = shadowPSW;
 
 	/* if we reached down here, then opcode was not understood, therefore reserved code trap */
 	this.vector = this.vectors.TRAP_RESERVED_OPCODE;

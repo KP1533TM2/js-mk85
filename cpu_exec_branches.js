@@ -28,7 +28,13 @@ CPU.prototype.getBranchCondition = function(opcode)
 	return result;
 };
 
-CPU.prototype.condBranches = function() {
-	// All branches would go here
+CPU.prototype.execBranch = function(code) {
+	// Branch instruction payload
+	this.sp_u8[0] = code&0xff;	// get offset
+		console.log(this.sp_s8[0]);
+	if(this.getBranchCondition(code)) {
+		this.reg_u16[7] += this.sp_s8[0]*2;
+	}
+	return CPU.prototype.execCode;
 };
 

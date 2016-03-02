@@ -2,6 +2,9 @@ CPU.prototype.execDoubleOp = function(code) {
 	var opcode = (code>>12)&0x7;
 	var isByte = ((code&0x8000)==0x8000)&&(opcode<6);
 
+	spu = isByte?this.sp_u8:this.sp_u16;
+	sps = isByte?this.sp_s8:this.sp_s16;
+
 	/* get 2 operands */
 
 	switch(opcode) {
@@ -38,14 +41,17 @@ CPU.prototype.execDoubleOp = function(code) {
 			/* I had two different PDP emulators, hundred and one Undertale soundtracks playing, 
 			 * five Wiki pages open, a mug half-full of tea, and a whole galaxy bitwise ANDs, ORs,
 			 * NOTs, XORs...
-			 * ...and also a real MK85, MDN javascript docs, a case of Wine, and two dozen
-			 * kilobytes of plain-text PDP manuals.
+			 * ...and also a pint of SIMH sources, a quart of Wine, a case of MDN javascript docs,
+			 * and two dozen kilobytes of plain-text PDP manuals.
 			 * Not that I needed all that for the trip, but once you get locked into a serious
-			 * drug collection, the tendency is to push it as far as you can.
+			 * JS coding, the tendency is to push it as far as you can.
+			 * The only thing that worried me was bitwise XOR. There's nothing more helpless and 
+			 * irresponsible and depraved than storing number's sign separately from the number, 
+			 * and I knew I'd get into that rotten stuff pretty soon.
+			 *
+ 			 * PS: note to myself: simulate ~ as ^0xffff - JS bitwise XOR messes things up, grrrr
 			 */
 
-			/* note to myself: simulate ~ as ^0xffff - JS bitwise XOR messes things up, grrrr */
-			
 			sp[3] = ((sp[2]&sp[1])|((0xffff^sp[0])&(sp[2]|sp[1])))>>(isByte?0:8);
 			
 			this.psw &= ~(this.flags.V|this.flags.C);
@@ -58,11 +64,34 @@ CPU.prototype.execDoubleOp = function(code) {
 		}
 		case 3:	/* BIT[B] */
 		{
+			var src = this.addressingIP((code>>6)&0x3f, isByte);
+			var dst = this.addressingIP(code&0x3f, isByte);
 			
+			sp = isByte?this.sp_u8:this.sp_u16;
+			
+			sp[0] = src.ru();
+			sp[1] = dst.ru();
+			sp[2] = sp[0]&sp[1];
+			
+			this.psw &= ~(this.flags.V);
+			
+			this.checkBitNZ((isByte?this.sp_s8:this.sp_s16)[2]);
+			
+			break;
 		}
 		case 4: /* BIC[B] */
 		case 5:	/* BIS[B] */
+		{
+			var src = this.addressingIP((code>>6)&0x3f, isByte);
+			var dst = this.addressingIP(code&0x3f, isByte);
+			spu[0] = src.ru();
+			spu[1] = (opcode==5)?(dst.ru()|spu[0]):(dst.ru()&(spu[0]^0xffff));
+			dst.w(spu[1]);
+			this.psw &= ~(this.flags.V);
+			
+			this.checkBitNZ(sps[1]);
+		}
 		case 6: /* ADD/SUB */
 	}
-	
+	return CPU.prototype.execCode;
 };
