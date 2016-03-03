@@ -1,6 +1,5 @@
 Test register modes 1x and 2x
 
-
 8000:	mov #8008, r5
 8004:	jmp (r5)			; test register deferred
 8006:	---

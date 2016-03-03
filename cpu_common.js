@@ -51,6 +51,18 @@ CPU.prototype.access = function(addr,writeVal,isByte) {
 
 CPU.prototype.getOctet = function(octet, val) {return ((val>>(octet*3))&7);};
 
+CPU.prototype.execTRAP10 = function(code) {
+	throw this.vectors.TRAP_RESERVED_OPCODE;
+};
+
+CPU.prototype.execTRAP = function(code) {
+	throw this.vectors.TRAP_TRAP;
+};
+
+CPU.prototype.execEMT = function(code) {
+	throw this.vectors.TRAP_EMT;
+};
+
 CPU.prototype.execCode = function() {
 	this.vector = null;
 	

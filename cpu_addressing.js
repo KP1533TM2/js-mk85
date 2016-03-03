@@ -123,7 +123,7 @@ CPU.prototype.addressingIP = function(operand, isByte) {
 	var regIndex = operand&7;
 	var addrMode = (operand>>3)&7;
 	var self = this;
-	
+
 	var result = null;
 	
 	if(addrMode==0) {
@@ -137,9 +137,7 @@ CPU.prototype.addressingIP = function(operand, isByte) {
 		this.reg_u16[regIndex] -= ((addrMode&1)==0)?(isByte?1:2):2;
 	}
 
-	/* take base value for modes, that is (Ri) */
 	var memPtr = self.reg_u16[regIndex];
-	console.log("memPTR =", memPtr.toString(16));
 
 	if((addrMode&6)==2) {
 		/* autoincrement */
@@ -152,28 +150,12 @@ CPU.prototype.addressingIP = function(operand, isByte) {
 		memPtr=(memPtr+this.access(this.reg_u16[7], null, false))&0xFFFF;
 		this.reg_u16[7]+=2;
 	}
+
+	/* add indirection if req'd */
+	var memPtrFinal = ((addrMode&1)==1)?this.access(memPtr, null, false):memPtr;
+
+	result=this.addrMem(memPtrFinal, isByte);
+	result.loc = ((addrMode>1)&&((addrMode&1)==1))?memPtrFinal:memPtr;
 	
-	result=this.addrMem(memPtr, isByte);
-	if((memPtr&1)==0) {
-		console.log("memptr", memPtr.toString(16), "result.ru()", result.ru().toString(16));
-		result.loc = ((addrMode>1)&&((addrMode&1)==1))?result.ru():memPtr;
-	}
-
-	if((addrMode&1)==1) {
-		/* if deferred, add another indirection */
-		memPtr=this.access(memPtr, null, false);
-	}
-
 	return result;
 };
-
-
-			/* template */
-/*			case 1: return {
-				w: function(val) {
-				},
-				r: function() {
-				},
-				nextIP:immediateIP
-			};
-*/

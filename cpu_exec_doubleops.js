@@ -17,7 +17,7 @@ CPU.prototype.execDoubleOp = function(code) {
 	
 			/* read signed */
 			var x = src.rs();
-			console.log(x);
+//			console.log(x);
 			/* and write it to destination */
 			dst.w(x);
 			this.psw &= ~this.flags.V;
@@ -29,7 +29,7 @@ CPU.prototype.execDoubleOp = function(code) {
 			var src = this.addressingIP((code>>6)&0x3f, isByte);
 			var dst = this.addressingIP(code&0x3f, isByte);
 			
-			console.log(isByte);
+//			console.log(isByte);
 			
 			sp = isByte?this.sp_u8:this.sp_u16;
 
