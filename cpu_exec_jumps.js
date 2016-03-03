@@ -11,7 +11,6 @@ CPU.prototype.execJMP = function(code) {
 
 };
 
-
 CPU.prototype.execJSR = function(code) {
 	var dst = this.addressingIP(code&0x3f, false);
 	if(!("loc" in dst)) throw this.vectors.TRAP_BUS_ERROR;
@@ -22,7 +21,6 @@ CPU.prototype.execJSR = function(code) {
 	this.reg_u16[7] = dst.loc;						// jump
 	return CPU.prototype.execCode;
 };
-
 
 CPU.prototype.execRTS = function(code) {
 	var r = code&7;
