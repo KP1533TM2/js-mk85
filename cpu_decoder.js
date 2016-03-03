@@ -13,9 +13,9 @@ CPU.prototype.makeDC0 = function(code) {
 		this.execBranch,
 		this.execJSR,
 		this.execJSR,
-		this.makeDC2,
-		this.makeDC3,
-		this.makeDC4,
+		this.execSingleOp,
+		this.execSingleOp,
+		this.execSingleOp,
 		this.makeDC5,
 		this.execTRAP10,
 		this.execTRAP10,
@@ -141,9 +141,9 @@ CPU.prototype.makeDC0 = function(code) {
 		this.execBranch,
 		this.execEMT,
 		this.execTRAP,
-		this.makeDC6,
-		this.makeDC7,
-		this.makeDC8,
+		this.execSingleOp, /* this.makeDC6, */
+		this.execSingleOp, /* this.makeDC7, */
+		this.execSingleOp, /* this.makeDC8, */
 		this.makeDC9,
 		this.execTRAP10,
 		this.execTRAP10,
@@ -456,99 +456,75 @@ CPU.prototype.makeDC1 = function(code) {
 		this.exec_SEC,
 		this.exec_SEC,
 		this.exec_SEC,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB,
-		this.exec_SWAB
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB,
+		this.execSWAB
 	][code&0xff].bind(this)(code);
-};
-
-CPU.prototype.makeDC2 = function(code) {
-	return [this.execCLR, this.execCOM, this.execINC, this.execDEC][(code>>6)&3].bind(this)(code);
-};
-
-CPU.prototype.makeDC3 = function(code) {
-	return [this.execNEG, this.execADC, this.execSBC, this.execTST][(code>>6)&3].bind(this)(code);
-};
-
-CPU.prototype.makeDC4 = function(code) {
-	return [this.execROR, this.execROL, this.execASR, this.execASL][(code>>6)&3].bind(this)(code);
 };
 
 CPU.prototype.makeDC5 = function(code) {
 	return [this.execMARK, this.execTRAP10, this.execTRAP10, this.execSXT][(code>>6)&3].bind(this)(code);
-};
-
-CPU.prototype.makeDC6 = function(code) {
-	return [this.execCLRB, this.execCOMB, this.execINCB, this.execDECB][(code>>6)&3].bind(this)(code);
-};
-
-CPU.prototype.makeDC7 = function(code) {
-	return [this.execNEGB, this.execADCB, this.execSBCB, this.execTSTB][(code>>6)&3].bind(this)(code);
-};
-
-CPU.prototype.makeDC8 = function(code) {
-	return [this.execRORB, this.execROLB, this.execASRB, this.execASLB][(code>>6)&3].bind(this)(code);
 };
 
 CPU.prototype.makeDC9 = function(code) {

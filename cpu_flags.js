@@ -7,6 +7,6 @@ CPU.prototype.checkBitNZ = function(a) {
 
 /* calculate the V bit for shifts/rotations, V = N xor C */
 CPU.prototype.NCtoV = function() {
-	this.psw = this.psw|(((this.psw>>2)^(psw<<1))&this.flags.V);
+	this.psw = this.psw|(((this.psw>>2)^(this.psw<<1))&this.flags.V);
 };
 

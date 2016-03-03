@@ -94,7 +94,7 @@ CPU.prototype.addressing = function(immediateIP, operand, isByte) {
 
 	if((addrMode&6)==2) {
 		/* autoincrement */
-		this.reg_u16[regIndex] += ((addrMode&1)==0)?(isByte?1:2):2;
+		this.reg_u16[regIndex] += (((addrMode&1)==0)&&(regIndex!=7))?(isByte?1:2):2;
 	}
 		
 	if((addrMode&6)==6) {
@@ -134,14 +134,14 @@ CPU.prototype.addressingIP = function(operand, isByte) {
 
 	if((addrMode&6)==4) {
 		/* autodecrement */
-		this.reg_u16[regIndex] -= ((addrMode&1)==0)?(isByte?1:2):2;
+		this.reg_u16[regIndex] -= (((addrMode&1)==0)&&(regIndex!=7))?(isByte?1:2):2;
 	}
 
 	var memPtr = self.reg_u16[regIndex];
 
 	if((addrMode&6)==2) {
 		/* autoincrement */
-		this.reg_u16[regIndex] += ((addrMode&1)==0)?(isByte?1:2):2;
+		this.reg_u16[regIndex] += (((addrMode&1)==0)&&(regIndex!=7))?(isByte?1:2):2;
 	}
 		
 	if((addrMode&6)==6) {

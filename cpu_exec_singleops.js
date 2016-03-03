@@ -1,8 +1,9 @@
-/* entire single operand group except JMP and SWAB */
+/* the following function implements entire single operand group
+ * except JMP and SWAB according to PDP-11 instruction repertoire, page 92 */
 
 CPU.prototype.execSingleOp = function(code) {
 	
-	var isByte = ((code&0x8000)==0x8000)&&(opcode<6);
+	var isByte = (code&0x8000)==0x8000; //&&(opcode<6);
 
 	var dst = this.addressingIP(code&0x3f, isByte);
 
@@ -23,7 +24,7 @@ CPU.prototype.execSingleOp = function(code) {
 			this.checkBitNZ(sps[0]);
 			return CPU.prototype.execCode;
 		}
-		case 0x2b: { // DEC[B]
+		case 0x2b:   // DEC[B]
 		case 0x2a: { // INC[B]
 			spu[0] = dst.ru();
 			spu[0] = (code&1)?spu[0]-1:spu[0]+1;
@@ -114,4 +115,13 @@ CPU.prototype.execSingleOp = function(code) {
 		}
 		default: throw this.vectors.TRAP_RESERVED_OPCODE;
 	}
+};
+
+CPU.prototype.execSWAB = function(code) {
+	var dst = this.addressingIP(code&0x3F, false);
+	this.sp_u16[0] = dst.ru();
+	dst.w((this.sp_u8[0]<<8)|this.sp_u8[1]);
+	this.psw &= ~(this.flags.V|this.flags.C);
+	this.checkBitNZ(this.sp_s8[1]);
+	return CPU.prototype.execCode;
 };

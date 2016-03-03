@@ -7,6 +7,7 @@
 <script src="cpu_exec_branches.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_exec_jumps.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_exec_doubleops.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="cpu_exec_singleops.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_addressing.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_flags.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_decoder.js" type="text/javascript" encoding="UTF-8"></script>
@@ -69,7 +70,7 @@ function loadWords( x ) {
 
 var test = {
 	0x0000:	[0x8000, 0x0500],
-	0x8000:[0x0977, 0x000c, 0x15c0, 0xbeef, 0x15c0, 0x0000, 0x01f9, 0x00a0, 0x15c0, 0xcafe, 0x0085 ]
+	0x8000: [0x95c0, 0x000f, 0x0c40, 0x00c0, 0x01fd]
 };
 
 loadWords(test);
