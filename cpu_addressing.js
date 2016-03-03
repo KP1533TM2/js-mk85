@@ -147,7 +147,7 @@ CPU.prototype.addressingIP = function(operand, isByte) {
 	if((addrMode&6)==6) {
 		/* index thing */
 		/* get value from current immediate IP address, from second or third word that is */
-		memPtr=(memPtr+this.access(this.reg_u16[7], null, false))&0xFFFF;
+		memPtr=(memPtr+this.access(this.reg_u16[7], null, false)+((regIndex==7)?2:0))&0xFFFF;
 		this.reg_u16[7]+=2;
 	}
 
