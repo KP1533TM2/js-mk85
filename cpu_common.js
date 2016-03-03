@@ -57,29 +57,24 @@ CPU.prototype.execCode = function() {
 	var shadowBuffer = this.regBuffer.slice();
 	var shadowPSW = this.psw;
 
-	/* test */
+	try {
+		var code = this.access(this.reg_u16[7], null, false);
+		this.reg_u16[7] += 2;
+		return this.makeDC0(code);
+	} catch(e) {
+		if (typeof e == 'number') {
 
-	//this.reg_u16[7] &= ~8;
-	
-	/* fetch opcode from IP */
-	var code = this.access(this.reg_u16[7], null, false);
-	this.reg_u16[7] += 2;
+			/* restore things clean before TRAP */
+			this.regBuffer = shadowBuffer;
+			this.psw = shadowPSW;
 
-	switch(this.getOctet(4, code)) {
-		case 0: {
-			/* branches and other things */
-			if(((code&0xff00)>0)&&(((code>>11)&1)==0)) {
-				// branch
-				return this.execBranch(code);
-			}
+			this.vector = e;
+			return CPU.prototype.execVector;
+		} else {
+			throw e;
 		}
-		case 7: break;
-		default: return this.execDoubleOp(code);
 	}
 
-	/* restore things clean before TRAP */
-	this.regBuffer = shadowBuffer;
-	this.psw = shadowPSW;
 
 	/* if we reached down here, then opcode was not understood, therefore reserved code trap */
 	this.vector = this.vectors.TRAP_RESERVED_OPCODE;

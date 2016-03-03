@@ -5,9 +5,11 @@
 <script src="cpu_definitions.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_interrupts.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_exec_branches.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="cpu_exec_jumps.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_exec_doubleops.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_addressing.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_flags.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="cpu_decoder.js" type="text/javascript" encoding="UTF-8"></script>
 
 </head>
 <meta charset="UTF-8">
@@ -52,37 +54,30 @@ function cpustep(){
 }
 
 var ram = new Uint8Array(65536);
-/*
-ram[0x8000] = 0xc5;
-ram[0x8001] = 0x55;
-ram[0x8002] = 0x55;
-ram[0x8003] = 0x00;
-ram[0x8004] = 0xc5;
-ram[0x8005] = 0x45;
-ram[0x8006] = 0x55;
-ram[0x8007] = 0x00;
-ram[0x8008] = 0xfb;
-ram[0x8009] = 0x01;
-*/
 
-ram[0x8000] = 0x03;
-ram[0x8001] = 0x01;
-ram[0x8002] = 0x03;
-ram[0x8003] = 0x01;
-ram[0x8004] = 0x00;
-ram[0x8005] = 0x01;
-ram[0x8006] = 0xfc;
-ram[0x8007] = 0x01;
-ram[0x8008] = 0xfc;
-ram[0x8009] = 0x01;
-ram[0x800a] = 0xfc;
-ram[0x800b] = 0x01;
-ram[0x800c] = 0x0f;
-ram[0x800d] = 0x01;
+var testJMP_1x_and_2x = {
+	0x0000:	[0x8000, 0x0500],
+	0x8000: [0x15c5, 0x8008, 0x004d],
+	0x8008: [0x15c5, 0x8010, 0x0055],
+	0x8010: [0x0107, 0x0109, 0x010b, 0x01f4],
+	0x8020: [0x15c0, 0x5500, 0x01f3],
+	0x8026: [0x15c0, 0x0550, 0x01f0],
+	0x802c: [0x15c0, 0x0055, 0x01ed]
+};
 
+function loadWords( x ) {
+	for(var startAddr in x) {
+		console.log("Writing words at", startAddr.toString(16));
+		var addr = startAddr;
+		var words = x[startAddr];
+		for(var i = 0; i < words.length; i++) {
+			ram[addr++] = words[i]&0xff;
+			ram[addr++] = (words[i]>>8)&0xff;
+		}
+	}
+};
 
-ram[0x0000] = 0x00;
-ram[0x0001] = 0x80;
+loadWords(testJMP_1x_and_2x);
 
 /* create CPU object */
 cpu = new CPU();
@@ -100,12 +95,7 @@ cpu.writeCallback = function (addr, byteVal) {
 cpu.reg_u16[7] = 0x0002;
 
 function scratchmonkey() {
-	console.log("IP was", cpu.reg_u16[7]);
-	var x = cpu.addressing(cpu.reg_u16[7],0x1F, false);
-	console.log("IP is now", cpu.reg_u16[7]);	
-	console.log("#n a.k.a. immediate a.k.a. mode 27", x.r());	
-	x.w(0x8000);
-	console.log(x.r());
+	console.log(cpu.makeDC0(0));
 }
 
 console.log("hOi!");

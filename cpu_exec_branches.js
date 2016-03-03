@@ -26,6 +26,8 @@ CPU.prototype.getBranchCondition = function(opcode)
 
 CPU.prototype.execBranch = function(code) {
 	// Branch instruction payload
+//	console.log(code&0xff);
+//	console.log(this);
 	this.sp_u8[0] = code&0xff;	// get offset
 	if(this.getBranchCondition(code)) {
 		this.reg_u16[7] += this.sp_s8[0]*2;

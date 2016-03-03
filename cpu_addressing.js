@@ -139,6 +139,7 @@ CPU.prototype.addressingIP = function(operand, isByte) {
 
 	/* take base value for modes, that is (Ri) */
 	var memPtr = self.reg_u16[regIndex];
+	console.log("memPTR =", memPtr.toString(16));
 
 	if((addrMode&6)==2) {
 		/* autoincrement */
@@ -152,12 +153,17 @@ CPU.prototype.addressingIP = function(operand, isByte) {
 		this.reg_u16[7]+=2;
 	}
 	
+	result=this.addrMem(memPtr, isByte);
+	if((memPtr&1)==0) {
+		console.log("memptr", memPtr.toString(16), "result.ru()", result.ru().toString(16));
+		result.loc = ((addrMode>1)&&((addrMode&1)==1))?result.ru():memPtr;
+	}
+
 	if((addrMode&1)==1) {
 		/* if deferred, add another indirection */
 		memPtr=this.access(memPtr, null, false);
 	}
-	
-	result=this.addrMem(memPtr, isByte);
+
 	return result;
 };
 
