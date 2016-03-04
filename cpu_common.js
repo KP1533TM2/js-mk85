@@ -28,6 +28,14 @@ function CPU() {
     this.cps            = 0x0000;
     this.sel			= 0x0000;
     this.opcode         = 0x0000;
+    this.cpuctrl		= 0x0500;
+    
+    this.flag_reset		= true;
+    this.flag_rtt		= false;
+    this.flag_wait		= false;
+    this.flag_step		= false;
+    this.flag_halt		= false;
+    this.flag_evnt		= false;
     
     /* gotta assign those before running anything */
 	this.readCallback   = null;
@@ -39,13 +47,29 @@ CPU.prototype.access = function(addr,writeVal,isByte) {
 		throw this.vectors.TRAP_BUS_ERROR;	// bus error: attempt to read word from odd address
 	} // TRAP 4
 
-    if(writeVal === null) {
-        return this.readCallback(addr)|(isByte?0:this.readCallback(addr+1)<<8);
-    } else {
-        this.writeCallback(addr,writeVal&0xFF);
-        if(!isByte) this.writeCallback(addr+1,(writeVal>>8)&0xFF);
-        return null;
-    }
+	if(writeVal === null) {
+		switch(addr) {
+			case 0x0104:
+			case 0x0105: {
+				return (this.cpuctrl>>((addr&1)?8:0))&(isByte?0xff:0xffff);
+			}
+			default: return this.readCallback(addr)|(isByte?0:this.readCallback(addr+1)<<8);
+		}
+	} else {
+		switch(addr) {
+			case 0x0104:
+			case 0x0105: {
+				this.cpuctrl = writeVal;
+				console.log("cpuctrl <= ", writeVal.toString(16));
+				return null;
+			}
+			default: {
+				this.writeCallback(addr,writeVal&0xFF);
+				if(!isByte) this.writeCallback(addr+1,(writeVal>>8)&0xFF);
+				return null;
+			}
+		}
+	}
 };
 
 
@@ -66,13 +90,21 @@ CPU.prototype.execEMT = function(code) {
 CPU.prototype.execCode = function() {
 	this.vector = null;
 	
+	if((this.cpuctrl&0x0400)==0) return CPU.prototype.execCode;
+
 	var shadowBuffer = this.regBuffer.slice();
 	var shadowPSW = this.psw;
 
 	try {
-		var code = this.access(this.reg_u16[7], null, false);
+		
+		var code=this.access(this.reg_u16[7], null, false);
+		console.log("code", code.toString(8), "(oct) at IP ", this.reg_u16[7].toString(16), "(hex)");
+		if(this.flag_evnt) throw this.vectors.TRAP_EVNT;
+		else if (this.flag_halt) code = 0x0000;
+		
 		this.reg_u16[7] += 2;
 		return this.makeDC0(code);
+		
 	} catch(e) {
 		if (typeof e == 'number') {
 
@@ -99,5 +131,6 @@ CPU.prototype.halt = function() {
 };
 
 CPU.prototype.step = function() {
+//	console.log("STEP");
 	this.nextFun = this.nextFun();
 };

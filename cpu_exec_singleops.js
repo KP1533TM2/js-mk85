@@ -27,7 +27,7 @@ CPU.prototype.execSingleOp = function(code) {
 		case 0x2b:   // DEC[B]
 		case 0x2a: { // INC[B]
 			spu[0] = dst.ru();
-			spu[0] = (code&1)?spu[0]-1:spu[0]+1;
+			spu[0] = ((code>>6)&1)?spu[0]-1:spu[0]+1;
 			dst.w(spu[0]);
 			this.psw &= ~this.flags.V;			
 			this.psw |= (spu[0]==(isByte?0x80:0x8000)-(code&1))?this.flags.V:0;

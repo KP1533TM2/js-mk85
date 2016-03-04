@@ -1,9 +1,10 @@
 CPU.prototype.execDoubleOp = function(code) {
 	var opcode = (code>>12)&0x7;
-	var isByte = ((code&0x8000)==0x8000)&&(opcode<6);
+	var isByte = ((code&0x8000)==0x8000);
 
-	spu = isByte?this.sp_u8:this.sp_u16;
-	sps = isByte?this.sp_s8:this.sp_s16;
+	/* opcode 6, i.e. ADD/SUB instructions always work on words */
+	spu = (isByte&&(opcode!=6))?this.sp_u8:this.sp_u16;
+	sps = (isByte&&(opcode!=6))?this.sp_s8:this.sp_s16;
 
 	/* get 2 operands */
 
@@ -14,6 +15,11 @@ CPU.prototype.execDoubleOp = function(code) {
 			
 			/* if destination is a register, then sign-extend it */
 			var dst = this.addressingIP(code&0x3f, ((code&0x38)==0)?false:isByte);
+	
+			if(this.reg_u16[7]==0x0a28) {
+				console.log("movb	(r0)+,(r1)+	;write pattern to display memory");
+				console.log("isByte", isByte);
+			}
 	
 			/* read signed */
 			var x = src.rs();
@@ -90,6 +96,7 @@ CPU.prototype.execDoubleOp = function(code) {
 			this.psw &= ~(this.flags.V);
 			
 			this.checkBitNZ(sps[1]);
+			break;
 		}
 		case 6: /* ADD/SUB - those work with words only */
 		{
@@ -97,13 +104,14 @@ CPU.prototype.execDoubleOp = function(code) {
 			var dst = this.addressingIP(code&0x3f, false);
 			spu[0] = src.ru();
 			spu[1] = dst.ru();
-			spu[2] = isByte?(spu[0]+spu[1]):(spu[1]-spu[0]);
+			spu[2] = isByte?(spu[1]-spu[0]):(spu[1]+spu[0]);
 			spu[3] = (spu[1]&spu[0])|((spu[2]^0xffff)&(spu[1]|spu[0]));
 			this.psw &= ~(this.flags.V|this.flags.C);
 			dst.w(spu[2]);
 			if((spu[3]&0x8000)!=0) this.psw |= this.flags.C;
 			if(((spu[3]^(spu[3]<<1))&0x8000)!=0) this.psw |= this.flags.V;
 			this.checkBitNZ(sps[2])
+			break;
 		}
 	}
 	return CPU.prototype.execCode;

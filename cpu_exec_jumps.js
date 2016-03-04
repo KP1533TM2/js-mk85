@@ -29,3 +29,12 @@ CPU.prototype.execRTS = function(code) {
 	return CPU.prototype.execCode;
 };
 
+CPU.prototype.execSOB = function(code) {
+	var r = (code>>6)&7;
+	this.reg_u16[r]--;
+	if(this.reg_u16[r]!=0) {
+		this.reg_u16[7] -= (code&0x3f)<<1;
+		console.log(this.reg_u16[7].toString(16));
+	}
+	return CPU.prototype.execCode;
+};

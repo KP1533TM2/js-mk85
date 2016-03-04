@@ -129,8 +129,8 @@ CPU.prototype.makeDC0 = function(code) {
 		this.execTRAP10,
 		this.execTRAP10,
 		this.execTRAP10,
-		this.exec_SOB,
-		this.exec_SOB,
+		this.execSOB,
+		this.execSOB,
 		this.execBranch,
 		this.execBranch,
 		this.execBranch,
@@ -264,7 +264,7 @@ CPU.prototype.makeDC0 = function(code) {
 
 CPU.prototype.makeDC1 = function(code) {
 	return [
-		this.exec_HALT,
+		this.execHALT,
 		this.exec_WAIT,
 		this.exec_RTI,
 		this.exec_BPT,

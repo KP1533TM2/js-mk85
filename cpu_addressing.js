@@ -32,7 +32,6 @@ CPU.prototype.addrReg = function(reg, isByte) {
 CPU.prototype.addrMem = function(memAddr, isByte) {
 	/* address memory */
 	var self = this;
-	
 	if(isByte) {
 		return {
 			w: function(val) {
@@ -124,11 +123,18 @@ CPU.prototype.addressingIP = function(operand, isByte) {
 	var addrMode = (operand>>3)&7;
 	var self = this;
 
+	var debug = (this.reg_u16[7]==0x0a28)||(this.reg_u16[7]==0x0a26)||(this.reg_u16[7]==0x0a24);
+
+	if(debug) {
+		console.log("IP", this.reg_u16[7].toString(16), "operand",  operand.toString(8));
+	}
+
 	var result = null;
 	
 	if(addrMode==0) {
 		/* if register addressing mode, just get it over with */
 		result = this.addrReg(regIndex, isByte);
+		if(debug) console.log("operand success");
 		return result;
 	}
 
@@ -152,10 +158,12 @@ CPU.prototype.addressingIP = function(operand, isByte) {
 	}
 
 	/* add indirection if req'd */
-	var memPtrFinal = ((addrMode&1)==1)?this.access(memPtr, null, false):memPtr;
+	var memPtrFinal = (addrMode==1)?memPtr:(((addrMode&1)==1)?this.access(memPtr, null, false):memPtr);
 
 	result=this.addrMem(memPtrFinal, isByte);
 	result.loc = ((addrMode>1)&&((addrMode&1)==1))?memPtrFinal:memPtr;
+	
+	if(debug) console.log("operand success");
 	
 	return result;
 };

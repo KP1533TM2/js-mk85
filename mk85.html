@@ -15,17 +15,15 @@
 <script src="cpu_flags.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="cpu_decoder.js" type="text/javascript" encoding="UTF-8"></script>
 <script src="mk85display.js" type="text/javascript" encoding="UTF-8"></script>
-
+<script src="mk85display.js" type="text/javascript" encoding="UTF-8"></script>
 </head>
 <meta charset="UTF-8">
 <body>
 
 <h1>MK85 CPU Debug</h1>
 
-<button type="button" onclick="cpustep()"> CPU step </button></br>
-<button type="button" onclick="cpu.reset()"> Reset </button></br> 
-
-<button type="button" onclick="scratchmonkey()"> thingamajig </button></br>
+<button type="button" onclick="doFrame()"> CPU step </button></br>
+<button type="button" onclick="cpu.reset()"> Reset </button></br>
 
 <p id="regs">regs</p><br>
 
@@ -42,6 +40,10 @@ var cpuflags = [
 
 function cpustep(){
 	cpu.step();
+	updateRegs();
+}
+
+function updateRegs() {
 	regs = document.getElementById("regs");
 	regstr = "";
 	for(var i = 0; i<8; i++)
@@ -50,57 +52,88 @@ function cpustep(){
 		regstr += i.toString(10);
 		regstr += " = " + cpu.reg_u16[i].toString(16);
 		regstr += "\n";
-	};
+	}
 	regstr += "PSW: ";
 	for(var j = 0; j < cpuflags.length; j++) {
 		regstr += (cpu.psw&cpuflags[j][1])?(cpuflags[j][0]):"-";
-	};
+	}
 	regs.innerHTML="<pre>"+regstr+"</pre>";
+
 }
 
-var ram = new Uint8Array(65536);
+var ram = new Uint8Array(2048);
 
-function loadWords( x ) {
-	for(var startAddr in x) {
-		console.log("Writing words at", startAddr.toString(16));
-		var addr = startAddr;
-		var words = x[startAddr];
-		for(var i = 0; i < words.length; i++) {
-			ram[addr++] = words[i]&0xff;
-			ram[addr++] = (words[i]>>8)&0xff;
-		}
-	}
+var ramBuf = new ArrayBuffer(2048);
+var ram_u8 = new Uint8Array(ramBuf);
+var ram_u16 = new Uint16Array(ramBuf);	// useful for in-browser debugging
+
+
+for(var i = 0; i < 2048; i++) {
+	ram_u8[i]=(Math.floor(Math.random()*255));
 };
 
-var test = {
-	0x0000:	[0x8000, 0x0500],
-	0x8000: [0x95c0, 0x000f, 0x0c40, 0x00c0, 0x01fd]
-};
+var rom;
+var cpu = new CPU();
 
-loadWords(test);
-
-/* create CPU object */
-cpu = new CPU();
-
-console.log(cpu.step);
-
-/* bind it to RAM */
 cpu.readCallback = function (addr) {
-	return ram[addr];
+	return (addr&0x8000)?ram_u8[addr&0x07FF]:rom[addr&0x7FFF];
 };
 
 cpu.writeCallback = function (addr, byteVal) {
-	ram[addr] = byteVal;
+	if(addr&0x8000) {
+		ram_u8[addr&0x7FFF] = byteVal;
+		return;
+	};
 };
 
-/* we just read the 1st instruction */
-cpu.reg_u16[7] = 0x0002;
-
-function scratchmonkey() {
-	console.log(cpu.makeDC0(0));
+function timerFunction() {
+	var video = [];
+	for (var i = 0; i < 96; i++) { video.push(ram_u8[i]); }
+	//
+	lcd.redraw(video); //redrawSimpleDisplay();
 }
 
-console.log("hOi!");
+
+var oReq = new XMLHttpRequest();
+oReq.open("GET", "/rom.bin", true);
+oReq.responseType = "arraybuffer";
+
+oReq.onload = function (oEvent) {
+  var arrayBuffer = oReq.response; // Note: not oReq.responseText
+  if (arrayBuffer) {
+    rom = new Uint8Array(arrayBuffer);
+    console.log("ROM loaded");
+    };
+    
+    /* breakpoint, kind of */
+    while(cpu.reg_u16[7] != 0x09f8) cpu.step();
+    timerFunction();
+    updateRegs();
+    
+    
+  };
+
+oReq.send(null);
+
+
+var lcd = new MK85Display('derpie');
+document.body.appendChild(lcd.initialize());
+
+function doFrame(){
+	cpustep();
+	timerFunction();
+/*	for (var i = 0; i<1;i++)
+	{
+		cpu.step();
+	};*/
+};
+
+
+
+
+
+
 </script>
+
 </body>
-</html>
+</html> 
