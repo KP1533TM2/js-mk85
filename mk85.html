@@ -21,7 +21,7 @@
 
 <h1>MK85 CPU Debug</h1>
 
-<button type="button" onclick="doFrame()"> CPU step </button></br>
+<button type="button" onclick="frameCallback()"> CPU step </button></br>
 <button type="button" onclick="cpu.reset()"> Reset </button></br>
 
 <p id="regs">regs</p><br>
@@ -116,14 +116,23 @@ oReq.onload = function (oEvent) {
 		rom = new Uint8Array(arrayBuffer);
 		console.log("ROM loaded");
 	};
-	rom[0] = 0x06;
-	rom[1] = 0x10;
+	cpu.reg_u16[7] = 0x1006;	// jump directly to TEST routine
+	cpu.nextFun = cpu.execCode;
 	lcd.animate(10);
 };
 oReq.send(null);
 
 function frameCallback() {
-	for(var x = 0; x < 100; x++) cpu.step();
+	if(lcd.timerHandle==null) cpu.step();
+	for(var x = 0; (x < 150)&&(lcd.timerHandle != null); x++)
+	{
+		cpu.step();
+		if(cpu.reg_u16[7] == /*0xa88*/ 0)
+		{
+			lcd.stopAnimating(); // breakpoint!
+			break;
+		}
+	}
 	updateRegs();
 };
 

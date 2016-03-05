@@ -36,8 +36,8 @@ CPU.prototype.execEIS = function(code) {
 		{
 			// (R, R|1) 32-bits divident, source field - 16-bit divisor, register - 16-bit quotient
 			// R must be even
-			this.sp_u16[0] = this.reg_u16[r];
-			this.sp_u16[1] = this.reg_u16[r|1];
+			this.sp_u16[0] = this.reg_u16[r|1];
+			this.sp_u16[1] = this.reg_u16[r|0];
 			this.sp_u16[2] = src.ru();
 			this.sp_u16[3] = 0;
 			if(s32[1]==0) {
