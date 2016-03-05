@@ -37,7 +37,7 @@ function CPU() {
     this.flag_halt		= false;
     this.flag_evnt		= false;
     
-    /* gotta assign those before running anything */
+    /* gotta assign those before running anything */   
 	this.readCallback   = null;
     this.writeCallback  = null;
 }
@@ -98,7 +98,7 @@ CPU.prototype.execCode = function() {
 	try {
 		
 		var code=this.access(this.reg_u16[7], null, false);
-		console.log("code", code.toString(8), "(oct) at IP ", this.reg_u16[7].toString(16), "(hex)");
+//		console.log("code", code.toString(8), "(oct) at IP ", this.reg_u16[7].toString(16), "(hex)");
 		if(this.flag_evnt) throw this.vectors.TRAP_EVNT;
 		else if (this.flag_halt) code = 0x0000;
 		
