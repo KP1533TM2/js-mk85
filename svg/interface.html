@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+<meta charset="UTF-8">
+<body>
+
+<h1>MK-85, yay!</h1>
+
+<p id="regs"></p><br>
+
+<div id="mk85"></div>
+
+<svg id="lcd" width="500" height="100">
+    <!--rect id="rect1" x="10" y="10" width="50" height="80"
+          style="stroke:#000000; fill:none;"/-->
+</svg>
+
+
+<script>
+
+//var myCircle = document.createElementNS(svgNS,"rect"); //to create a circle. for rectangle use "rectangle"
+
+//var svgNS = "http://www.w3.org/2000/svg";
+
+function MK85_SVG_LCD() {
+	this.svgNS = "http://www.w3.org/2000/svg";
+	var svg = document.createElementNS(this.svgNS, "svg");
+	svg.setAttributeNS(null,"width",  6*2+4*7*12-8);
+	svg.setAttributeNS(null,"height", 25+7*8);
+	svg.setAttributeNS(null,"style", "background-color:gainsboro");
+	this.svg = svg;
+	
+	var pixelWidth  = 3.5;
+	var pixelHGap   = 0.5;
+	var pixelHeight = 4.5;
+	var pixelVGap   = 0.5;
+	
+	var x_offset = 6;
+	var y_offset = 35;
+
+	// make 2 pages of video memory
+	var videoMemorySize = 96;
+	this.videoMemory = new Uint8Array(videoMemorySize);
+	this.videoPages = [new Uint8Array(videoMemorySize), new Uint8Array(videoMemorySize)];
+	this.videoPage = [0,1];
+
+	this.cursorReg = 0;
+
+	this.cursorDelay = 35;
+	this.cursorTimer = 0;
+	this.cursorVisible = false;
+
+	this.characters = [];
+	// create 12 character places
+	for (var x = 0; x < 12; x++)
+		this.characters.push(createDotMatrix(this.svg, 7,5,x_offset+x*((3.5+0.5)*7),y_offset,3.5,4.5,0.5,0.5,"black","gray"));
+
+	// create LCD memory mapping for addresses
+	this.mapping = Array.apply(null, Array(videoMemorySize));
+
+	for (var x = 0; x<this.characters.length; x++) {
+		for (var y = 0; y<this.characters[x].length; y++) {
+			this.mapping[(x<<3)+y+1] = this.characters[x][y];
+		}
+	}
+
+	this.doFrame = function() {
+		if(this.cursorTimer == 0) {
+			this.cursorTimer = this.cursorDelay;
+			this.cursorVisible = !this.cursorVisible;
+		} else {
+			this.cursorTimer--;
+		}
+		var cursorShape = (this.cursorVisible?
+			((this.cursorReg&0x10)?[0,0,0,0,0,0,31]:[31,31,31,31,31,31,31])
+			:[0,0,0,0,0,0,0]);
+
+		var newPage = (this.videoPage[1]+1)%2;	
+		var oldPage = (this.videoPage[0]+1)%2;
+		var cursorAddr = ((this.cursorReg&0xf)<<3)+1;
+		// copy videomemory into a buffer and overlay cursor image while we're at it
+		for(var x = 0; x < this.videoPages[newPage].length; x++) {
+			this.videoPages[newPage][x]=this.videoMemory[x];
+			this.videoPages[newPage][x]|=((x>=cursorAddr)&&(x<cursorAddr+cursorShape.length))?
+										 cursorShape[x-cursorAddr]:0;
+			if((this.videoPages[newPage][x]!=this.videoPages[oldPage][x])&&(this.mapping[x]!=null))
+				this.mapping[x](this.videoPages[newPage][x]);
+		}
+		this.videoPage[1]=(this.videoPage[1]+1)%2;
+		this.videoPage[0]=(this.videoPage[0]+1)%2;
+	};
+
+	return this;
+}
+
+function createTextField(root, x, y, text, size, colorOn, colorOff) {
+	var txt = document.createElementNS(svgNS, "text");
+	txt.setAttributeNS(null,"x", x);
+	txt.setAttributeNS(null,"y", y);
+	txt.setAttributeNS(null,"fill",colorOff);
+	txt.setAttributeNS(null,"font-family","Arial");
+//	txt.setAttributeNS(null,"font-weight","bold");
+	txt.setAttributeNS(null,"text-anchor","middle");
+	txt.setAttributeNS(null,"font-size",size);
+	var txtNode = document.createTextNode(text);
+	txt.appendChild(txtNode);
+	root.appendChild(txt);
+	return(txtNode);
+	
+}
+
+function createDotMatrix(root, rows, cols, x, y, dotWidth, dotHeight, dotHGap, dotVGap, dotColorOn, dotColorOff) {
+	var writers = [];
+	for(var i = 0; i < rows; i++) {
+		var row = [];
+		for(var j = 0; j < cols; j++) {
+			// create dot
+			var dot = document.createElementNS(svgNS, "rect");
+			dot.setAttributeNS(null,"x", x+j*(dotWidth+dotHGap));
+			dot.setAttributeNS(null,"y", y+i*(dotHeight+dotVGap));
+			dot.setAttributeNS(null,"width",  dotWidth);
+			dot.setAttributeNS(null,"height", dotHeight);
+			dot.setAttributeNS(null,"fill", dotColorOff);
+			dot.setAttributeNS(null,"stroke", "none");
+			root.appendChild(dot);
+			row.push(dot);
+		}
+		writers.push(dotMatrixRowWriter(row.slice(), dotColorOn, dotColorOff));
+	}
+	return writers;
+}
+
+function dotMatrixRowWriter(row, dotColorOn, dotColorOff) {
+	return function(data) {
+		var dots = row;
+		var bits = data;
+		for(var k = 0; k < dots.length; k++) {
+			dots[k].setAttributeNS(null,"fill", (bits&1)?dotColorOn:dotColorOff);
+			bits >>= 1;
+		}
+	};
+}
+
+var lcd = MK85_SVG_LCD();
+document.getElementById("mk85").appendChild(lcd.svg);
+
+lcd.cursorReg = 0x11;
+for(var x = 0; x<96; x++)
+	lcd.videoMemory[x] = (Math.floor(Math.random()*32));
+
+var textSegs = [
+	{addr:0x00, bit:0, txt:"EXT",  x:16, y:17},
+	{addr:0x00, bit:1, txt:"S",    x:34, y:12},
+	{addr:0x00, bit:2, txt:"F",    x:34, y:22},
+	{addr:0x08, bit:0, txt:"RUN",  x:58, y:12},
+	{addr:0x08, bit:1, txt:"WRT",  x:58, y:22},
+	{addr:0x08, bit:4, txt:"DEG",  x:4*7*3-4+6, y:17},
+	{addr:0x18, bit:0, txt:"RAD",  x:4*7*4+0+6, y:17},
+	{addr:0x20, bit:0, txt:"GRA",  x:4*7*5+4+6, y:17},
+	{addr:0x28, bit:0, txt:"TR",  x:4*7*6+6+10, y:17},
+	{addr:0x58, bit:3, txt:"STOP",  x:4*7*11+6+5, y:17},
+];
+for(var x = 0; x<textSegs.length; x++) {
+	var seg = textSegs[x];
+	createTextField(lcd.svg, seg.x, seg.y, seg.txt,11, "black","gray");
+}
+
+
+var timerID = setInterval(function() {lcd.doFrame()}, 10);
+
+</script>
+
+</body>
+</html> 
