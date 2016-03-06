@@ -102,7 +102,7 @@ MK85_SVG_FACE.prototype.keyUpHandler = function(evt) {
 };
 
 MK85_SVG_FACE.prototype.keyDownHandler = function(evt) {
-	if(evt.which == 8) evt.preventDefault();
+	if((evt.which == 8)||(evt.which == 32)) evt.preventDefault();
 	if((this.hasFocus)&&(this.keyList.length<2)) {
 		if((evt.keyCode in this.kbthing)&&(this.keyList.indexOf(evt.keyCode)==-1))
 			this.keyList.push(evt.keyCode);

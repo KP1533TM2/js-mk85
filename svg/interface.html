@@ -23,10 +23,19 @@
 <body>
 
 <h1>MK-85, yay!</h1>
-<button type="button" onclick="mk85.gui.lcd.animate(10)"> Run! </button></br>
 <p id="regs"></p><br>
 
 <div id="mk85"></div>
+
+<div id="debugger">
+<button type="button" onclick="runStuff()">Run</button>
+<button type="button" onclick="step()">Step</button>
+<button type="button" onclick="addBreakpoint()">Breakpoint add</button>
+Breakpoint addr (hex):
+<input id="breakpointAddr"></input>
+</br>
+
+</div>
 
 <script>
 
@@ -34,9 +43,51 @@ var svgNS = "http://www.w3.org/2000/svg";
 var mk85 = new MK85(document.getElementById("mk85"));
 mk85.initializeDefault();
 
-function run() {
+function addBreakpoint() {
+	console.log("asdf");
+	mk85.addBreakpoint(parseInt(document.getElementById('breakpointAddr').value, 16));
+}
+
+function runStuff() {
+	mk85.breakpointHit = false;
+	mk85.gui.lcd.animate(10);
+}
+
+function step() {
+	mk85.breakpointHit = true;
+	mk85.gui.lcd.doFrame();
+	updateRegs();
+}
+
+var cpuflags = [
+	["H",0x0100],
+	["I",0x0080],
+	["T",0x0010],
+	["N",0x0008],
+	["Z",0x0004],
+	["V",0x0002],
+	["C",0x0001]];
 	
-};
+function updateRegs() {
+	regs = document.getElementById("regs");
+	regstr = "";
+	var cpu = mk85.cpu;
+	for(var i = 0; i<8; i++)
+	{
+		regstr += "R";
+		regstr += i.toString(10);
+		regstr += " = " + cpu.reg_u16[i].toString(16);
+		regstr += "\n";
+	}
+	regstr += "PSW: ";
+	for(var j = 0; j < cpuflags.length; j++) {
+		regstr += (cpu.psw&cpuflags[j][1])?(cpuflags[j][0]):"-";
+	}
+	regstr += " "+cpu.psw.toString(16);
+	regs.innerHTML="<pre>"+regstr+"</pre>";
+
+}
+
 
 </script>
 

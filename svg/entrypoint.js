@@ -5,7 +5,22 @@ function MK85(root) {
 	this.ram = null;
 	this.rom = null;
 	this.pp = 0;
+	this.breakpoints = [];
+	this.breakpointHit = false;
 }
+
+MK85.prototype.addBreakpoint = function(addr) {
+	if(this.breakpoints.indexOf(addr)==-1) {
+		// add breakpoint in the list
+		this.breakpoints.push(addr);
+	}
+};
+
+MK85.prototype.delBreakpoint = function(addr) {
+	if(breakpoints.indexOf(addr)!=-1) {
+		this.breakpoints.splice(breakpoints.indexOf(addr), 1);
+	}
+};
 
 MK85.prototype.initializeDefault = function() {
 	var self = this;
@@ -55,11 +70,21 @@ MK85.prototype.initializeDefault = function() {
 	
 	// add callback to perform some cpu cycles between frames
 	this.gui.lcd.timerCallback = function() {
-		//self.gui.key1 = 10;
-		for(var x = 0; x < 100; x++)
-		{
-			if(self.gui.keyList.length>0) self.cpu.cpuctrl |= 0x400;
+		if(self.breakpointHit) {
 			self.cpu.step();
+		} else {
+			for(var x = 0; x < 100; x++)
+			{
+				if(self.gui.keyList.length>0) self.cpu.cpuctrl |= 0x400;
+				self.cpu.step();
+				if((self.breakpoints!=[])&&(self.breakpoints.indexOf(self.cpu.reg_u16[7]) != -1))
+				{
+					self.breakpointHit = true;
+					self.gui.lcd.stopAnimating();
+					console.log("breakpoint", self.cpu.reg_u16[7].toString(16), "hit!");
+					break;
+				}
+			}
 		}
 	};
 	
