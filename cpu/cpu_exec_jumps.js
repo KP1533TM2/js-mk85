@@ -34,7 +34,7 @@ CPU.prototype.execSOB = function(code) {
 	this.reg_u16[r]--;
 	if(this.reg_u16[r]!=0) {
 		this.reg_u16[7] -= (code&0x3f)<<1;
-		console.log(this.reg_u16[7].toString(16));
+//		console.log(this.reg_u16[7].toString(16));
 	}
 	return CPU.prototype.execCode;
 };

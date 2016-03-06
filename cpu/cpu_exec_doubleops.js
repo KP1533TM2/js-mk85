@@ -16,11 +16,6 @@ CPU.prototype.execDoubleOp = function(code) {
 			/* if destination is a register, then sign-extend it */
 			var dst = this.addressingIP(code&0x3f, ((code&0x38)==0)?false:isByte);
 	
-			if(this.reg_u16[7]==0x0a28) {
-				console.log("movb	(r0)+,(r1)+	;write pattern to display memory");
-				console.log("isByte", isByte);
-			}
-	
 			/* read signed */
 			var x = src.rs();
 //			console.log(x);

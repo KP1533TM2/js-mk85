@@ -80,7 +80,11 @@ document.body.appendChild(lcd.svg);
 var cpu = new CPU();
 
 cpu.readCallback = function (addr) {
-	return (addr&0x8000)?ram_u8[addr&0x07FF]:rom[addr&0x7FFF];
+	if(addr<0x8000) return rom[addr&0x7FFF];
+	if((addr>=0x8000)&&(addr<0x8800)) {
+		return ram_u8[addr&0x7FFF];
+	}
+	return 0;
 };
 
 cpu.writeCallback = function (addr, byteVal) {
@@ -92,10 +96,11 @@ cpu.writeCallback = function (addr, byteVal) {
 		lcd.cursorReg = byteVal;
 		return;
 	}
-	if(addr&0x8000) {
+	if((addr>=0x8000)&&(addr<0x8800)) {
 		ram_u8[addr&0x7FFF] = byteVal;
 		return;
 	}
+	return;
 };
 
 function timerFunction() {
@@ -124,7 +129,7 @@ oReq.send(null);
 
 function frameCallback() {
 	if(lcd.timerHandle==null) cpu.step();
-	for(var x = 0; (x < 150)&&(lcd.timerHandle != null); x++)
+	for(var x = 0; (x < 50)&&(lcd.timerHandle != null); x++)
 	{
 		cpu.step();
 		if(cpu.reg_u16[7] == /*0xa88*/ 0)

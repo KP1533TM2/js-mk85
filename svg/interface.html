@@ -1,39 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="svg_display.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/cpu/cpu_common.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/cpu/cpu_definitions.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/cpu/cpu_interrupts.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/cpu/cpu_exec_branches.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/cpu/cpu_exec_jumps.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/cpu/cpu_exec_doubleops.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/cpu/cpu_exec_singleops.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/cpu/cpu_exec_onehalfops.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/cpu/cpu_exec_misc.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/cpu/cpu_exec_condcode.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/cpu/cpu_addressing.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/cpu/cpu_flags.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/cpu/cpu_decoder.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/svg/svg_display.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/svg/svg_face.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/svg/svg_face_keys.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="/svg/entrypoint.js" type="text/javascript" encoding="UTF-8"></script>
 </head>
 <meta charset="UTF-8">
 <body>
 
 <h1>MK-85, yay!</h1>
-
+<button type="button" onclick="mk85.gui.lcd.animate(10)"> Run! </button></br>
 <p id="regs"></p><br>
 
 <div id="mk85"></div>
 
-<svg id="lcd" width="500" height="100">
-    <!--rect id="rect1" x="10" y="10" width="50" height="80"
-          style="stroke:#000000; fill:none;"/-->
-</svg>
-
-
 <script>
 
-//var myCircle = document.createElementNS(svgNS,"rect"); //to create a circle. for rectangle use "rectangle"
+var svgNS = "http://www.w3.org/2000/svg";
+var mk85 = new MK85(document.getElementById("mk85"));
+mk85.initializeDefault();
 
-//var svgNS = "http://www.w3.org/2000/svg";
-
-
-
-var lcd = MK85_SVG_LCD();
-document.getElementById("mk85").appendChild(lcd.svg);
-
-lcd.cursorReg = 0x07;
-for(var x = 0; x<96; x++)
-	lcd.videoMemory[x] = (Math.floor(Math.random()*32));
-
-//var timerID = setInterval(function() {lcd.doFrame()}, 10);
+function run() {
+	
+};
 
 </script>
 

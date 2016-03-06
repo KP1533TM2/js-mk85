@@ -3,8 +3,20 @@ function MK85_SVG_LCD() {
 	var svg = document.createElementNS(this.svgNS, "svg");
 	svg.setAttributeNS(null,"width",  6*2+4*7*12-8);
 	svg.setAttributeNS(null,"height", 25+7*8);
-	svg.setAttributeNS(null,"style", "background-color:gainsboro");
+//	svg.setAttributeNS(null,"style", "background-color:gainsboro");
 	this.svg = svg;
+
+	var r = document.createElementNS(this.svgNS, "rect");
+	r.setAttributeNS(null,"x",      0);
+	r.setAttributeNS(null,"y",      0);	
+	r.setAttributeNS(null,"width",  6*2+4*7*12-8);
+	r.setAttributeNS(null,"height", 25+7*8);
+	r.setAttributeNS(null,"fill",   "gainsboro");
+	
+	svg.appendChild(r);
+
+	var segmentOn  = "black";	
+	var segmentOff = "lightgray";
 	
 	var pixelWidth  = 3.5;
 	var pixelHGap   = 0.5;
@@ -29,7 +41,7 @@ function MK85_SVG_LCD() {
 	this.characters = [];
 /* create 12 character places */
 	for (var x = 0; x < 12; x++)
-		this.characters.push(createDotMatrix(this.svg, 7,5,x_offset+x*((3.5+0.5)*7),y_offset,3.5,4.5,0.5,0.5,"black","gray"));
+		this.characters.push(createDotMatrix(this.svg, 7,5,x_offset+x*((3.5+0.5)*7),y_offset,3.5,4.5,0.5,0.5,segmentOn,segmentOff));
 
 /* array to sort out extra mappings */
 	var extraMappings = [];
@@ -53,7 +65,7 @@ function MK85_SVG_LCD() {
 		var mapping = {};
 		mapping["addr"] = seg["addr"];
 		mapping["bit"] = seg["bit"];
-		mapping["f"] = createTextField(this.svg, seg.x, seg.y, seg.txt, 11, "black", "gray");
+		mapping["f"] = createTextField(this.svg, seg.x, seg.y, seg.txt, 11, segmentOn, segmentOff);
 		extraMappings.push(mapping);
 	}
 
@@ -96,7 +108,7 @@ function MK85_SVG_LCD() {
 
 	for (var x = 0; x < sevenSegsMapping.length; x++) {
 		// create seven-segment digit and get array of functions to access its segments
-		var digit = create7SegDisplay(this.svg, 210.5+x*12*2, 7.5, 2, "black", "gray");
+		var digit = create7SegDisplay(this.svg, 210.5+x*12*2, 7.5, 2, segmentOn, segmentOff);
 		
 		for(segment in digit)
 		{
@@ -197,7 +209,6 @@ function createTextField(root, x, y, text, size, colorOn, colorOff) {
 	txt.setAttributeNS(null,"y", y);
 	txt.setAttributeNS(null,"fill",colorOff);
 	txt.setAttributeNS(null,"font-family","Arial");
-//	txt.setAttributeNS(null,"font-weight","bold");
 	txt.setAttributeNS(null,"text-anchor","middle");
 	txt.setAttributeNS(null,"font-size",size);
 	var txtNode = document.createTextNode(text);
@@ -260,13 +271,13 @@ function set7SegWriter(segment, colorOn, colorOff) {
 function create7SegDisplay(root, x, y, scale, colorOn, colorOff) {
 	// line coords from a to g
 	var lines = {
-		a:{x1:0,y1:0,x2:5,y2:0},
-		b:{x1:5,y1:0,x2:5,y2:5},
-		c:{x1:5,y1:5,x2:5,y2:10},
-		d:{x1:5,y1:10,x2:0,y2:10},
-		e:{x1:0,y1:10,x2:0,y2:5},
-		f:{x1:0,y1:5,x2:0,y2:0},
-		g:{x1:0,y1:5,x2:5,y2:5}
+		a:{x1:0+2,y1:0,x2:5+2,y2:0},
+		b:{x1:5+2,y1:0,x2:5+1,y2:5},
+		c:{x1:5+1,y1:5,x2:5+0,y2:10},
+		d:{x1:5+0,y1:10,x2:0+0,y2:10},
+		e:{x1:0+0,y1:10,x2:0+1,y2:5},
+		f:{x1:0+1,y1:5,x2:0+2,y2:0},
+		g:{x1:0+1,y1:5,x2:5+1,y2:5}
 	};
 	var offset = {x1:x, x2:x, y1:y, y2:y};
 	var arr = {};

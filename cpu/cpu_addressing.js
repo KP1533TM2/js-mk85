@@ -123,7 +123,8 @@ CPU.prototype.addressingIP = function(operand, isByte) {
 	var addrMode = (operand>>3)&7;
 	var self = this;
 
-	var debug = (this.reg_u16[7]==0x0a28)||(this.reg_u16[7]==0x0a26)||(this.reg_u16[7]==0x0a24);
+//	var debug = (this.reg_u16[7]==0x0a28)||(this.reg_u16[7]==0x0a26)||(this.reg_u16[7]==0x0a24);
+	var debug = false;
 
 	if(debug) {
 		console.log("IP", this.reg_u16[7].toString(16), "operand",  operand.toString(8));
