@@ -93,14 +93,15 @@ CPU.prototype.execDoubleOp = function(code) {
 			this.checkBitNZ(sps[1]);
 			break;
 		}
-		case 6: /* ADD/SUB - those work with words only */
+		case 6: /* ADD(0)/SUB(1) - those work with words only */
 		{
 			var src = this.addressingIP((code>>6)&0x3f, false);
 			var dst = this.addressingIP(code&0x3f, false);
 			spu[0] = src.ru();
 			spu[1] = dst.ru();
 			spu[2] = isByte?(spu[1]-spu[0]):(spu[1]+spu[0]);
-			spu[3] = (spu[1]&spu[0])|((spu[2]^0xffff)&(spu[1]|spu[0]));
+			spu[4] = ~spu[(isByte?1:2)];
+			spu[3] = (spu[(isByte?2:1)]&spu[0])|(spu[4]&(spu[(isByte?2:1)]|spu[0]));
 			this.psw &= ~(this.flags.V|this.flags.C);
 			dst.w(spu[2]);
 			if((spu[3]&0x8000)!=0) this.psw |= this.flags.C;
