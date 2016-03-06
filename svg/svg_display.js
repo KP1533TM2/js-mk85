@@ -149,18 +149,30 @@ function MK85_SVG_LCD() {
 		} else {
 			this.cursorTimer--;
 		}
-		var cursorShape = (this.cursorVisible?
+/*		var cursorShape = (this.cursorVisible?
 			((this.cursorReg&0x10)?[0,0,0,0,0,0,31]:[31,31,31,31,31,31,31])
 			:[0,0,0,0,0,0,0]);
+*/
+		var cursorShape = (this.cursorVisible?
+			((this.cursorReg&0x10)?
+				{or:[0,0,0,0,0,0,31], and:[0,0,0,0,0,0,31]}:
+				{or:[31,31,31,31,31,31,31], and:[31,31,31,31,31,31,31]})
+			:{or:[0,0,0,0,0,0,0], and:[31,31,31,31,31,31,31]});
 
 		var newPage = (this.videoPage[1]+1)%2;	
 		var oldPage = (this.videoPage[0]+1)%2;
 		var cursorAddr = ((this.cursorReg&0xf)<<3)+1;
 		// copy videomemory into a buffer and overlay cursor image while we're at it
 		for(var x = 0; x < this.videoPages[newPage].length; x++) {
-			this.videoPages[newPage][x]=this.videoMemory[x];
-			this.videoPages[newPage][x]|=((x>=cursorAddr)&&(x<cursorAddr+cursorShape.length))?
-										 cursorShape[x-cursorAddr]:0;
+		
+			if((x>=cursorAddr)&&(x<cursorAddr+7)) {
+				var b = this.videoMemory[x];
+				b = (b&cursorShape.and[x-cursorAddr])|cursorShape.or[x-cursorAddr];
+				this.videoPages[newPage][x] = b;
+			} else {
+				this.videoPages[newPage][x] = this.videoMemory[x];
+			}								 
+										 
 			if((this.videoPages[newPage][x]!=this.videoPages[oldPage][x])&&(this.mapping[x]!=null))
 				this.mapping[x](this.videoPages[newPage][x]);
 		}
