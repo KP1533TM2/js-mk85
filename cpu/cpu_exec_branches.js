@@ -18,7 +18,7 @@ CPU.prototype.getBranchCondition = function(opcode)
 	/* V flag enabled */
 	var V = ((this.psw&this.flags.V)?true:false) && ((b10 && !b15) || (b15 && b10 && !b9));
 	/* N flag enabled */
-	var N = ((this.psw&this.flags.N)?true:false) && (b10 || (b15 && !(b10 || b9)));
+	var N = ((this.psw&this.flags.N)?true:false) && ((b10 && !b15) || (b15 && !b10 && !b9));
 	/* compute actual value */
 	var result = (uncond || (Z || (N != V) || C)) == b8;
 	return result;
