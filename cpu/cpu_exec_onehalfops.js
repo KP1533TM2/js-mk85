@@ -100,7 +100,7 @@ CPU.prototype.execEIS = function(code) {
 CPU.prototype.execXOR = function(code) {
 	var r = (code>>6)&0x7;
 	var dst = this.addressingIP(code&0x3f, false);
-	this.sp_u16[0] = this.reg_u16[0];
+	this.sp_u16[0] = this.reg_u16[r];
 	this.sp_u16[0] ^= dst.ru();
 	dst.w(this.sp_u16[0]);
 	this.psw &= ~this.flags.V;

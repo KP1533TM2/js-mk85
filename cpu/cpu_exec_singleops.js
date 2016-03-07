@@ -20,7 +20,7 @@ CPU.prototype.execSingleOp = function(code) {
 		case 0x29: { // COM[B]
 			spu[0] = dst.ru(); spu[0]^=0xffff; dst.w(spu[0]);
 			this.psw |= this.flags.C;
-			this.psw &= this.flags.V;
+			this.psw &= ~this.flags.V;
 			this.checkBitNZ(sps[0]);
 			return CPU.prototype.execCode;
 		}
