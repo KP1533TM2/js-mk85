@@ -27,11 +27,11 @@ MK85.prototype.initializeDefault = function() {
 	this.initializeGUI();
 
 	// throw in some 2k RAM
-	this.loadRAMFromURL("/ram.bin");
+	this.loadRAMFromURL("../ram.bin");
 //	this.ram = new ArrayBuffer(2048);
 	
 	// throw in some ROM
-	this.loadROMFromURL("/rom.bin");
+	this.loadROMFromURL("../rom.bin");
 	
 	// wire up our CPU to everything else
 	this.cpu.readCallback = function (addr) {
