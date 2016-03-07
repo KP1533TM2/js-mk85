@@ -33,15 +33,71 @@
 <button type="button" onclick="addBreakpoint()">Breakpoint add</button>
 Breakpoint addr (hex):
 <input id="breakpointAddr"></input>
-</br>
-
+<br>
+Memory offset
+<input id="memoryOffset"></input>
+<button type="button" onclick="applyOffset()">Apply</button>
+<button type="button" onclick="switchMemView(true)">Word view</button>
+<button type="button" onclick="switchMemView(false)">Byte view</button>
+<br>
+<p id="mem" style="font-family:monospace">uuuuh herro</p>
 </div>
 
 <script>
 
+var memOffset = 0x8000;
+var memWords = false;
+
 var svgNS = "http://www.w3.org/2000/svg";
 var mk85 = new MK85(document.getElementById("mk85"));
 mk85.initializeDefault();
+
+
+function toHex(val, pad) {
+	var s = val.toString(16);
+	console.log(val, s);
+	while(s.length<pad) s = "0" + s;
+	return s;
+}
+
+function switchMemView(words) {
+	memWords = words;
+	updateMemView();
+}
+
+function updateMemView() {
+	// show a bit of memory
+	var rows = 20;
+	var bytesPerRow = 16;
+	var addr = memOffset;
+	console.log("addr? ", memOffset); 
+	var p = "";
+	for(var x = 0; x< rows; x++) {
+		// print address
+		var line = toHex(addr,4)+": ";
+		var tmp = 0;
+		
+		var byteCounter = bytesPerRow;
+		while(byteCounter--) {
+			if(memWords)
+			{
+				if(addr&1) addr++;
+				else line += toHex(mk85.cpu.access(addr++, null, false), 4) + " ";
+			} else {
+				line += toHex(mk85.cpu.access(addr++, null, true), 2) + " ";
+			}
+		}
+		
+		p += line + "\n";
+		
+	}
+	document.getElementById('mem').innerHTML = "<pre>"+p+"</pre>";
+}
+
+function applyOffset() {
+	memOffset = parseInt(document.getElementById('memoryOffset').value, 16);
+	updateMemView();	
+}
 
 function addBreakpoint() {
 	console.log("asdf");
@@ -57,6 +113,7 @@ function step() {
 	mk85.breakpointHit = true;
 	mk85.gui.lcd.doFrame();
 	updateRegs();
+	updateMemView();
 }
 
 var cpuflags = [

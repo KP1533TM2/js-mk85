@@ -27,8 +27,8 @@ MK85.prototype.initializeDefault = function() {
 	this.initializeGUI();
 
 	// throw in some 2k RAM
-	this.ram = new ArrayBuffer(2048);
-	this.ram_u8 = new Uint8Array(this.ram);
+	this.loadRAMFromURL("/ram.bin");
+//	this.ram = new ArrayBuffer(2048);
 	
 	// throw in some ROM
 	this.loadROMFromURL("/rom.bin");
@@ -37,7 +37,8 @@ MK85.prototype.initializeDefault = function() {
 	this.cpu.readCallback = function (addr) {
 		if((addr&0xfffe)==0x0100) return (self.gui.keyRead(self.pp)>>((addr&1)?8:0))&0xff;
 		if(addr<0x8000) return self.rom[addr&0x7FFF];
-		if((addr>=0x8000)&&(addr<0x8800)) return self.ram_u8[addr&0x7FFF];
+//		if((addr>=0x8000)&&(addr<0x8800)) return self.ram_u8[addr&0x7FFF];
+		if((addr>=0x8000)&&(addr<0x8800)) return self.ram[addr&0x7FFF];
 		// keyboard column regs
 		return 0;
 	}
@@ -62,7 +63,8 @@ MK85.prototype.initializeDefault = function() {
 			return;
 		}
 		if((addr>=0x8000)&&(addr<0x8800)) {
-			self.ram_u8[addr&0x7FFF] = byteVal;
+			self.ram[addr&0x7FFF] = byteVal;
+//			self.ram_u8[addr&0x7FFF] = byteVal;
 			return;
 		}
 		return;
@@ -100,7 +102,6 @@ MK85.prototype.attachROM = function(rom_array) {
 };
 
 MK85.prototype.loadROMFromURL = function(romURL) {
-	// load ROM - blocking!
 	var self = this;
 	var oReq = new XMLHttpRequest();
 	oReq.open("GET", romURL, true);
@@ -114,4 +115,20 @@ MK85.prototype.loadROMFromURL = function(romURL) {
 	};
 	oReq.send(null);
 };
+
+MK85.prototype.loadRAMFromURL = function(ramURL) {
+	var self = this;
+	var oReq = new XMLHttpRequest();
+	oReq.open("GET", ramURL, true);
+	oReq.responseType = "arraybuffer";
+	oReq.onload = function (oEvent) {
+		var arrayBuffer = oReq.response; // Note: not oReq.responseText
+		if (arrayBuffer) {
+			self.ram = new Uint8Array(arrayBuffer);
+			console.log("RAM", ramURL, "loaded!");
+		};
+	};
+	oReq.send(null);
+};
+
 
