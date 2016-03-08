@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../cpu/cpu_common.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../cpu/cpu_definitions.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../cpu/cpu_interrupts.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../cpu/cpu_exec_branches.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../cpu/cpu_exec_jumps.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../cpu/cpu_exec_doubleops.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../cpu/cpu_exec_singleops.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../cpu/cpu_exec_onehalfops.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../cpu/cpu_exec_misc.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../cpu/cpu_exec_condcode.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../cpu/cpu_addressing.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../cpu/cpu_flags.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../cpu/cpu_decoder.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../svg/svg_display.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../svg/svg_face.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../svg/svg_face_keys.js" type="text/javascript" encoding="UTF-8"></script>
-<script src="../svg/entrypoint.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./cpu/cpu_common.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./cpu/cpu_definitions.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./cpu/cpu_interrupts.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./cpu/cpu_exec_branches.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./cpu/cpu_exec_jumps.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./cpu/cpu_exec_doubleops.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./cpu/cpu_exec_singleops.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./cpu/cpu_exec_onehalfops.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./cpu/cpu_exec_misc.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./cpu/cpu_exec_condcode.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./cpu/cpu_addressing.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./cpu/cpu_flags.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./cpu/cpu_decoder.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./svg/svg_display.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./svg/svg_face.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./svg/svg_buttons.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./svg/svg_face_keys.js" type="text/javascript" encoding="UTF-8"></script>
+<script src="./svg/entrypoint.js" type="text/javascript" encoding="UTF-8"></script>
 </head>
 <meta charset="UTF-8">
 <body>
@@ -27,10 +28,26 @@
 No front face with all those buttons and definitions yet, sorry.<br>
 
 <p style="font-family:monospace">
-	How to use:
+How to use:<br>
 Press "Run" button, mouseover to the gray box/LCD screen, and use your keyboard to key stuff in.
+<br>
+Key mappings:<br>
+AC   - Esc <br>
+DEL  - Del <br>
+MODE - Ins <br>
+[S]  - Home<br>
+[F]  - End <br>
+ANS  - Shift <br>
+EE   - Ctrl <br>
+<br>
+There's also a 'reset all' switch mapped to PageUp key.<br>
+That is a recessed button on the back of the original<br>
+machine that is used to clear memory.<br>
 
-Key mapping:
+TODO:<br>
+* Front face, buttons and stuff<br>
+* STOP key and its interrupt<br>
+* Power switch<br>
 
 </p>
 

@@ -85,15 +85,30 @@ function MK85_SVG_LCD() {
 	this.timerCallback = null;
 	
 	this.animate = function(delay_ms) {
-		this.timerHandle = setInterval(this.doFrame, delay_ms);
+		this.timerHandle = setInterval(this.doFrame.bind(this), delay_ms);
 	};
 	this.stopAnimating = function() {
 		clearInterval(this.timerHandle);
 		this.timerHandle = null;
 	};
 	
-	this.doFrame = function() {
-	
+
+
+/* almost there, map all extra segments to memory locations and generate byte writers */
+	var byteMappings = {};
+	for(var x = 0; x < extraMappings.length; x++) {
+		var mapping = extraMappings[x];		// get mapping
+		var b = (mapping.addr in byteMappings)?byteMappings[mapping.addr]:{};
+		b[mapping.bit] = mapping.f; // assign a function
+		byteMappings[mapping.addr] = b; // write it back
+	}
+
+/* and finally, generate byte writers and put them into array */	
+	for(var m in byteMappings) this.mapping[m] = arbitraryWriter(byteMappings[m]);
+}
+
+//	this.doFrame = function() {
+MK85_SVG_LCD.prototype.doFrame = function() {
 		if(typeof this.timerCallback == "function") this.timerCallback();
 	
 		if(this.cursorTimer == 0) {
@@ -104,7 +119,7 @@ function MK85_SVG_LCD() {
 		}
 
 		var cursorShape = cursorShapes[this.cursorVisible?((this.cursorReg&0x10)?"underscore":"block"):"none"];
-
+//		console.log(this.videoPage);
 		var newPage = (this.videoPage[1]+1)%2;	
 		var oldPage = (this.videoPage[0]+1)%2;
 		var cursorAddr = ((this.cursorReg&0xf)<<3)+1;
@@ -126,18 +141,6 @@ function MK85_SVG_LCD() {
 		this.videoPage[0]=(this.videoPage[0]+1)%2;
 	};
 
-/* almost there, map all extra segments to memory locations and generate byte writers */
-	var byteMappings = {};
-	for(var x = 0; x < extraMappings.length; x++) {
-		var mapping = extraMappings[x];		// get mapping
-		var b = (mapping.addr in byteMappings)?byteMappings[mapping.addr]:{};
-		b[mapping.bit] = mapping.f; // assign a function
-		byteMappings[mapping.addr] = b; // write it back
-	}
-
-/* and finally, generate byte writers and put them into array */	
-	for(var m in byteMappings) this.mapping[m] = arbitraryWriter(byteMappings[m]);
-}
 
 function arbitraryWriter(mapping) {
 	var arr = Array.apply(null, Array(8));
@@ -168,6 +171,8 @@ function createTextField(root, x, y, text, size, colorOn, colorOff) {
 	txt.setAttributeNS(null,"text-anchor","middle");
 	txt.setAttributeNS(null,"font-size",size);
 	var txtNode = document.createTextNode(text);
+	txt.setAttribute("unselectable", "on");
+	txt.setAttribute("class", "unselectable");
 	txt.appendChild(txtNode);
 	root.appendChild(txt);
 	return(textFieldWriter(txt, colorOn, colorOff));
@@ -248,7 +253,6 @@ function create7SegDisplay(root, x, y, scale, colorOn, colorOff) {
 		root.appendChild(line);
 		arr[segName] = set7SegWriter(line, colorOn, colorOff);
 	}
-//	console.log(arr);
 	return arr;
 }
 

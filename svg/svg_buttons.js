@@ -183,15 +183,18 @@ MK85_SVG_FACE.prototype.createButtonsOn = function(svg) {
 		};
 		
 		// bind functions
-		g.setAttributeNS(null,"onmouseup","MK85_SVG_FACE.prototype.keyRelease(event)");
-		g.setAttributeNS(null,"onmouseout","MK85_SVG_FACE.prototype.keyRelease(event)");
+
+		g.setAttributeNS(null,"onmouseup","{ this.keyPress() }");
+/*		g.setAttributeNS(null,"onmouseout","MK85_SVG_FACE.prototype.keyRelease(event)");
 		g.setAttributeNS(null,"onmousedown","MK85_SVG_FACE.prototype.keyPress(event)");
-		
+*/	
 /*		g.addEventListener("onmouseup", this.handleEvent, true);
 		g.addEventListener("onmouseup", this.handleEvent, true);
 */		
 		svg.appendChild(g);
+
 	}
+//	svg.setAttributeNS(null,"onmouseup","MK85_SVG_FACE.prototype.keyRelease(event)");
 }
 
 MK85_SVG_FACE.prototype.keyPress = function(evt) {
