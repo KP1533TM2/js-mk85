@@ -52,17 +52,3 @@ MK85_SVG_FACE.prototype.keyTables = [
 	0x0000]					// INIT 
 ];
 
-
-/*  function KeyRead : pointer;
-  var
-    k: integer;
-  begin
-    if KeyCode2 <> 0 then k := KeyCode2 else k := KeyCode1;
-    kbdcols := 0;
-    if (kbdrows and $0002) <> 0 then kbdcols := kbdcols or KeyTab1[k];
-    if (kbdrows and $0004) <> 0 then kbdcols := kbdcols or KeyTab2[k];
-    if (kbdrows and $0008) <> 0 then kbdcols := kbdcols or KeyTab3[k];
-    KeyRead := @kbdcols;
-  end {KeyRead};
-
-end.*/

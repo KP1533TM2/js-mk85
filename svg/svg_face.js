@@ -21,6 +21,8 @@ function MK85_SVG_FACE(root) {
 	
 	// create SVG LCD
 	
+	this.createButtonsOn(face);
+	
 	this.lcd = MK85_SVG_LCD();
 //	lcd.timerCallback = frameCallback;
 	face.appendChild(this.lcd.svg);
