@@ -1,6 +1,8 @@
 CPU.prototype.execHALT = function(code) {
 	this.cpc = this.reg_u16[7];
 	this.cps = this.psw;
+	console.log("HALT, PC =", this.cpc.toString(16), ", PSW =",this.cps.toString(16));
+	
 	var loc = 0x0078|((this.psw&this.flags.H)?(this.sel&0xff00):0);
 	/* jumping to address */
 	this.reg_u16[7] = this.access(loc, null, false);
@@ -10,10 +12,24 @@ CPU.prototype.execHALT = function(code) {
 
 CPU.prototype.execGO = function(code) {
 	if(this.psw&this.flags.H) {
+		console.log("GO, PC =", this.cpc.toString(16), ", PSW =",this.cps.toString(16));
 		this.reg_u16[7] = this.cpc;
 		this.psw = this.cps&(~this.flags.H);
 		return CPU.prototype.execCode;
 	} else {
+		throw this.vectors.TRAP_RESERVED_OPCODE;
+	}
+};
+
+
+CPU.prototype.makeSTEP = function(code) {
+	if(this.psw&this.flags.H) {
+		this.step_flag = true;
+		this.reg_u16[7] = this.cpc;
+		this.psw &= ~this.flags.H;
+		return CPU.prototype.execCode;
+	} else {
+		console.log("STEP threw a trap");
 		throw this.vectors.TRAP_RESERVED_OPCODE;
 	}
 };

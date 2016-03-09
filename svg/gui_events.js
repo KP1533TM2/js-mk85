@@ -25,6 +25,7 @@ function KBKeyPress(evt) {
 	if(typeof key == 'undefined') return;
 	// find the key in mapping
 	if((uniquesPressed.indexOf(key) == -1)&&(uniquesPressed.length < 2)) {
+		if(key=="stop") MK85CPU.flag_halt = true;
 		uniquesPressed.push(key);
 		console.log(uniquesPressed);
 	}
@@ -35,7 +36,7 @@ function KBKeyRelease(evt) {
 	var key = keyByCode(evt.keyCode);
 	if(typeof key == 'undefined') return;
 
-	if(key=="stop") MK85CPU.flag_halt = true;
+//	if(key=="stop") MK85CPU.flag_halt = true;
 
 	if(uniquesPressed.indexOf(key) != -1) {
 		uniquesPressed.splice(key, 1);
@@ -49,6 +50,7 @@ function GUIKeyPress(evt) {
 	if(supportsVibrate) window.navigator.vibrate(100);
 
 	if((uniquesPressed.indexOf(key) == -1)&&(uniquesPressed.length < 2)) {
+		if((key=="stop")&&(!MK85CPU.flag_halt)) MK85CPU.flag_halt = true;
 		uniquesPressed.push(key);
 		console.log(uniquesPressed);
 	}
@@ -58,7 +60,7 @@ function GUIKeyRelease(evt) {
 	evt.preventDefault();
 	var key = evt.currentTarget.id;
 
-	if(key=="stop") MK85CPU.flag_halt = true;
+//	if(key=="stop") MK85CPU.flag_halt = true;
 
 	if(uniquesPressed.indexOf(key) != -1) {
 		uniquesPressed.splice(key, 1);

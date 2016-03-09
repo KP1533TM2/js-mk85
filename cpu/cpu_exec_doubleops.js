@@ -85,11 +85,15 @@ CPU.prototype.execDoubleOp = function(code) {
 		{
 			var src = this.addressingIP((code>>6)&0x3f, isByte);
 			var dst = this.addressingIP(code&0x3f, isByte);
+			
+/*			if(typeof dst.memAddr != 'undefined')
+				console.log(dst.memAddr.toString(16), src.ru().toString(16));*/
+			
 			spu[0] = src.ru();
 			spu[1] = (opcode==5)?(dst.ru()|spu[0]):(dst.ru()&(spu[0]^0xffff));
 			dst.w(spu[1]);
 			this.psw &= ~(this.flags.V);
-			
+
 			this.checkBitNZ(sps[1]);
 			break;
 		}

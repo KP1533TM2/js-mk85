@@ -85,6 +85,15 @@ CPU.prototype.execTRAP = function(code) {
 	throw this.vectors.TRAP_TRAP;
 };
 
+CPU.prototype.execIOT = function(code) {
+	throw this.vectors.TRAP_IO;
+};
+
+CPU.prototype.execWAIT = function(code) {
+	this.flag_wait = true;
+	return CPU.prototype.execCode;
+};
+
 CPU.prototype.execEMT = function(code) {
 	throw this.vectors.TRAP_EMT;
 };
@@ -119,8 +128,8 @@ CPU.prototype.execCode = function() {
 
 		if(this.flag_evnt) throw this.vectors.TRAP_EVNT;
 		else if (this.flag_halt) {
-			code = 0x0000;
 			this.flag_halt = false;
+			return this.makeDC0(0x0000);
 		}
 		
 		this.reg_u16[7] += 2;
@@ -136,6 +145,7 @@ CPU.prototype.execCode = function() {
 			this.vector = e;
 			return CPU.prototype.execVector;
 		} else {
+			for (var key in e) console.log("ERROR ",key,e[key]);
 			throw e;
 		}
 	}

@@ -1,4 +1,7 @@
 var loadCounter = 1;
+
+var debug = false;
+
 function checkIfMemoryLoaded() {
 	if(loadCounter>0) {
 		loadCounter--;
@@ -15,6 +18,11 @@ function checkIfMemoryLoaded() {
 			for(var steps = 0; steps < 150; steps++)
 			{
 				MK85CPU.step();
+/*				if(MK85CPU.reg_u16[7] == 0x00f4) {
+					console.log("HALT INTERRUPT");
+					debug = true;
+				}*/
+				if(MK85CPU.psw&MK85CPU.flags.H) console.log(MK85CPU.reg_u16[7].toString(16));
 			}
 		}
 		LCD.animate(10);
