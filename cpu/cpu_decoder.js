@@ -263,19 +263,19 @@ CPU.prototype.makeDC0 = function(code) {
 };
 
 CPU.prototype.makeDC1 = function(code) {
-	return [
+	var table = [
 		this.execHALT,
 		this.exec_WAIT,
-		this.exec_RTI,
+		this.execRTI,
 		this.exec_BPT,
 		this.exec_IOT,
 		this.exec_RESET,
 		this.exec_RTT,
 		this.execTRAP10,
-		this.exec_GO,
-		this.exec_GO,
-		this.exec_GO,
-		this.exec_GO,
+		this.execGO,
+		this.execGO,
+		this.execGO,
+		this.execGO,
 		this.exec_STEP,
 		this.exec_STEP,
 		this.exec_STEP,
@@ -520,7 +520,11 @@ CPU.prototype.makeDC1 = function(code) {
 		this.execSWAB,
 		this.execSWAB,
 		this.execSWAB
-	][code&0xff].bind(this)(code);
+	];
+//	console.log(code);
+	if(typeof table[code&0xff] == 'undefined')
+		throw {e:"lel", msg:"unimplemented instruction"+code.toString(16)};
+	return table[code&0xff].bind(this)(code);
 };
 
 CPU.prototype.makeDC5 = function(code) {

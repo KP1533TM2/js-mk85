@@ -4,9 +4,13 @@ var GUIKeysPressed = [];
 var GUIKeysPressedMax = 2;
 
 var KBKeysPressed = [];
-var KBKeysPressedMax = 10;
+var KBKeysPressedMax = 2;
+
+var uniquesPressed = [];
 
 window.addEventListener('keydown', KBKeyPress, true);
+//window.addEventListener('keypress', KBKeyPress, true);
+
 window.addEventListener('keyup', KBKeyRelease, true);
 
 function keyByCode(keyCode) {
@@ -20,9 +24,9 @@ function KBKeyPress(evt) {
 	var key = keyByCode(evt.keyCode);
 	if(typeof key == 'undefined') return;
 	// find the key in mapping
-	if((KBKeysPressed.indexOf(key) == -1)&&(KBKeysPressed.length < KBKeysPressedMax)) {
-		KBKeysPressed.push(key);
-		console.log(KBKeysPressed);
+	if((uniquesPressed.indexOf(key) == -1)&&(uniquesPressed.length < 2)) {
+		uniquesPressed.push(key);
+		console.log(uniquesPressed);
 	}
 }
 
@@ -30,9 +34,12 @@ function KBKeyRelease(evt) {
 	evt.preventDefault();
 	var key = keyByCode(evt.keyCode);
 	if(typeof key == 'undefined') return;
-	if((KBKeysPressed.indexOf(key) != -1)&&(KBKeysPressed.length > 0)) {
-		KBKeysPressed.splice(key, 1);
-		console.log(KBKeysPressed);
+
+	if(key=="stop") MK85CPU.flag_halt = true;
+
+	if(uniquesPressed.indexOf(key) != -1) {
+		uniquesPressed.splice(key, 1);
+		console.log(uniquesPressed);
 	}
 }
 
@@ -40,17 +47,21 @@ function GUIKeyPress(evt) {
 	var key = evt.currentTarget.id;
 	evt.preventDefault();
 	if(supportsVibrate) window.navigator.vibrate(100);
-	if((GUIKeysPressed.indexOf(key) == -1)&&(GUIKeysPressed.length < GUIKeysPressedMax)) {
-		GUIKeysPressed.push(key);
+
+	if((uniquesPressed.indexOf(key) == -1)&&(uniquesPressed.length < 2)) {
+		uniquesPressed.push(key);
+		console.log(uniquesPressed);
 	}
-	console.log(GUIKeysPressed);
 }
 
 function GUIKeyRelease(evt) {
 	evt.preventDefault();
 	var key = evt.currentTarget.id;
-	if((GUIKeysPressed.indexOf(key) != -1)&&(GUIKeysPressed.length > 0)) {
-		GUIKeysPressed.splice(key, 1);
+
+	if(key=="stop") MK85CPU.flag_halt = true;
+
+	if(uniquesPressed.indexOf(key) != -1) {
+		uniquesPressed.splice(key, 1);
+		console.log(uniquesPressed);
 	}
-	console.log(GUIKeysPressed);
 }

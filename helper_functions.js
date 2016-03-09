@@ -6,10 +6,11 @@ function checkIfMemoryLoaded() {
 		// If everything is loaded then finish all the preparations and kick off
 		glueCPU();
 		LCD.timerCallback = function () {
-			if((KBKeysPressed.length>0)||(GUIKeysPressed.length>0))
+			if(uniquesPressed.length>0)
 			{
-				console.log("clock on");
-				MK85CPU.cpuctrl |= 0x0400;
+//				if(uniquesPressed.indexOf("stop")!=-1) MK85CPU.flag_halt = true;
+				MK85CPU.cpuctrl |= 0x0400;	// enable CPU clock if anything is pressed
+//				if()
 			}
 			for(var steps = 0; steps < 150; steps++)
 			{

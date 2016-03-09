@@ -29,6 +29,8 @@ function CPU() {
     this.sel			= 0x0000;
     this.opcode         = 0x0000;
     this.cpuctrl		= 0x0500;
+
+	this.freqDiv = 0;
     
     this.flag_reset		= true;
     this.flag_rtt		= false;
@@ -60,7 +62,7 @@ CPU.prototype.access = function(addr,writeVal,isByte) {
 			case 0x0104:
 			case 0x0105: {
 				this.cpuctrl = writeVal;
-				console.log("cpuctrl <= ", writeVal.toString(16));
+//				console.log("cpuctrl <= ", writeVal.toString(16));
 				return null;
 			}
 			default: {
@@ -92,6 +94,18 @@ CPU.prototype.execCode = function() {
 	
 	if((this.cpuctrl&0x0400)==0) return CPU.prototype.execCode;
 
+	if((this.cpuctrl&0x0800)==0) {
+		if(this.freqDiv < 8)
+		{
+			this.freqDiv++;
+			return CPU.prototype.execCode;
+		} else {
+			this.freqDiv = 0;
+		}
+	} else {
+		this.freqDiv = 0;
+	}
+
 	var shadowBuffer = this.regBuffer.slice();
 	var shadowPSW = this.psw;
 
@@ -99,8 +113,15 @@ CPU.prototype.execCode = function() {
 		
 		var code=this.access(this.reg_u16[7], null, false);
 //		console.log("code", code.toString(8), "(oct) at IP ", this.reg_u16[7].toString(16), "(hex)");
+		if(this.flag_halt||this.flag_evnt) this.flag_wait = false;
+		if(this.flag_step||((this.psw&this.flags.H)!=0)) this.flag_halt =false;
+		this.step_flag = false;
+
 		if(this.flag_evnt) throw this.vectors.TRAP_EVNT;
-		else if (this.flag_halt) code = 0x0000;
+		else if (this.flag_halt) {
+			code = 0x0000;
+			this.flag_halt = false;
+		}
 		
 		this.reg_u16[7] += 2;
 		return this.makeDC0(code);

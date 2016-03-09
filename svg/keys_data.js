@@ -12,13 +12,11 @@ function uniqueFromTwoArrays(arr1, arr2) {
 function keysRead(rows) {
 	// rows a.k.a. CPU parallel port output
 	
-	var keys = uniqueFromTwoArrays(KBKeysPressed,GUIKeysPressed);
+//	var keys = uniqueFromTwoArrays(KBKeysPressed,GUIKeysPressed);
 	
-	var lastElem = keys[keys.length-1];
+	var lastElem = uniquesPressed[uniquesPressed.length-1];
 	
 	var k = ((typeof lastElem != 'undefined')&&(lastElem in keyTable))?keyTable[lastElem]:"nokey";
-
-//	console.log(" K ",k);
 
 	var cols = ((rows&2)?k[0]:0)|((rows&4)?k[1]:0)|((rows&8)?k[2]:0);
 	return cols;
