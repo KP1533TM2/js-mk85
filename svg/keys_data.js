@@ -12,8 +12,6 @@ function uniqueFromTwoArrays(arr1, arr2) {
 function keysRead(rows) {
 	// rows a.k.a. CPU parallel port output
 	
-//	var keys = uniqueFromTwoArrays(KBKeysPressed,GUIKeysPressed);
-	
 	var lastElem = uniquesPressed[uniquesPressed.length-1];
 	
 	var k = ((typeof lastElem != 'undefined')&&(lastElem in keyTable))?keyTable[lastElem]:"nokey";
@@ -27,8 +25,6 @@ function keysRead(rows) {
 	
 	return cols;
 }
-
-//console.log(keyTable["mode"])
 
 var keyboardMapping = {
 	q:0x51,

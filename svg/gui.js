@@ -1,7 +1,7 @@
 svgNS = "http://www.w3.org/2000/svg";
 
 function composeGUI() {
-	var root = createSVG(640,480,"background-color:gainsboro");
+	var root = createSVG(640,240,"background-color:gainsboro");
 	
 	createButtonsOn(root);
 	
