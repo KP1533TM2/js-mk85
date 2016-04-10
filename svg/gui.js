@@ -123,16 +123,12 @@ function createButtonsOn(svg) {
 			}
 		}
 		// bind functions
-/*		g.setAttributeNS(null,"onmouseup","keyRelease(event)");
-		g.setAttributeNS(null,"onmouseout","keyRelease(event)");
-		g.setAttributeNS(null,"onmousedown","keyPress(event)");*/
-		
 		g.addEventListener("touchstart", GUIKeyPress, false);
 		g.addEventListener("touchend", GUIKeyRelease, false);
-				
-		g.setAttributeNS(null,"onmouseup","GUIKeyRelease(event)");
-		g.setAttributeNS(null,"onmouseout","GUIKeyRelease(event)");
-		g.setAttributeNS(null,"onmousedown","GUIKeyPress(event)");		
+
+		g.addEventListener("mousedown",GUIKeyPress, false);
+		g.addEventListener("mouseup",GUIKeyRelease, false);
+		g.addEventListener("mouseout",GUIKeyRelease, false);
 
 		svg.appendChild(g);
 	}
