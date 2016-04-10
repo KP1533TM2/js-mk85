@@ -12,6 +12,9 @@ function keyByCode(keyCode) {
 }
 
 function KBKeyPress(evt) {
+
+	console.log(evt.keyCode.toString(16));
+
 	var key = keyByCode(evt.keyCode);
 	if(typeof key == 'undefined') return;
 

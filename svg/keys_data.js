@@ -100,8 +100,8 @@ var keyTable = {
 	mode:		[0x0000,0x000C,0x0000],
 	arrow_l:	[0x0000,0x0014,0x0000],
 	arrow_r:	[0x0000,0x0018,0x0000],
-	mod_s:		[0x0000,0x0024,0x0000],
-	mod_f:		[0x0000,0x0028,0x0000],
+	mode_s:		[0x0000,0x0024,0x0000],
+	mode_f:		[0x0000,0x0028,0x0000],
 	
 	q:			[0x0000,0x0000,0x0044],
 	w:			[0x0000,0x0000,0x000c],
@@ -166,8 +166,8 @@ var faceKeys = {
 	mode:{type:0, posCode:0x05, lblAbove:"MODE", lblAboveColor:'black'},
 	arrow_l:{type:0, posCode:0x06, lblOn:"←"},
 	arrow_r:{type:0, posCode:0x07, lblOn:"→"},
-	mod_s:{type:0, posCode:0x08, lblOn:"S", lblOnColor:'red'},
-	mod_f:{type:0, posCode:0x09, lblOn:"F", lblOnColor:'blue'},
+	mode_s:{type:0, posCode:0x08, lblOn:"S", lblOnColor:'red'},
+	mode_f:{type:0, posCode:0x09, lblOn:"F", lblOnColor:'blue'},
 
 	q:{type:0, posCode:0x10, lblRight:"Я", lblOn:"Q", lblAbove:"!",  lblBelow:"SET"},
 	w:{type:0, posCode:0x11, lblRight:"В", lblOn:"W", lblAbove:"\"", lblBelow:"MODE"},
