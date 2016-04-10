@@ -1,11 +1,10 @@
-var loadCounter = 1;
+var loadCounter = 0;
 
 var debug = false;
 
 function checkIfMemoryLoaded() {
-	if(loadCounter>0) {
-		loadCounter--;
-	} else {
+	if(loadCounter>0) loadCounter--;
+	if(loadCounter==0) {
 		// If everything is loaded then finish all the preparations and kick off
 		glueCPU();
 		LCD.timerCallback = function () {
@@ -34,6 +33,8 @@ function loadBinary(urlBIN, callback) {
 	var oReq = new XMLHttpRequest();
 	oReq.open("GET", urlBIN, true);
 	oReq.responseType = "arraybuffer";
+	loadCounter++;
+	console.log("To load:", loadCounter);
 	oReq.onload = function (oEvent) {
 		var arrayBuffer = oReq.response; // Note: not oReq.responseText
 		if (arrayBuffer) {

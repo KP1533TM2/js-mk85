@@ -21,6 +21,22 @@ var RAM = null;
 var ROM = null;
 
 // Load RAM and ROM contents
-loadBinary("ram.bin", function (buf) { RAM = new Uint8Array(buf); checkIfMemoryLoaded(); });
+
+var ramCookie = getCookie("ram");
+
+if(typeof ramCookie == 'undefined') {
+	console.log("Getting RAM contents from ram.bin");
+	loadBinary("ram.bin", function (buf) { RAM = new Uint8Array(buf); checkIfMemoryLoaded(); });	
+} else {
+	console.log("Getting RAM contents from cookie");
+	RAM = new Uint8Array(_base64ToArrayBuffer(ramCookie));
+}
+
 loadBinary("rom.bin", function (buf) { ROM = new Uint8Array(buf); checkIfMemoryLoaded(); });
 
+
+window.onunload = function() {
+	// Store cookie with RAM contents
+	var b64 = btoa(String.fromCharCode.apply(null, RAM));
+	setCookie("ram", b64, {expires:3600});
+}
