@@ -38,5 +38,5 @@ loadBinary("rom.bin", function (buf) { ROM = new Uint8Array(buf); checkIfMemoryL
 window.onunload = function() {
 	// Store cookie with RAM contents
 	var b64 = btoa(String.fromCharCode.apply(null, RAM));
-	setCookie("ram", b64, {expires:3600});
+	setCookie("ram", b64, {expires:1209600});
 }
